@@ -434,13 +434,13 @@ function clearTable() {
 
 // Custom Modal Implementation
 function customAlert(title, message) {
-    showModal(title, message, [{ text: "OK", primary: true }]);
+    showModal(title, message, [{ text: "✓", primary: true }]);
 }
 
 function customConfirm(title, message, callback) {
     showModal(title, message, [
-        { text: "Abbrechen", primary: false, onClick: () => callback(false) },
-        { text: "Löschen", primary: true, onClick: () => callback(true) }
+        { text: "✕", primary: false, onClick: () => callback(false) },
+        { text: "✓", primary: true, onClick: () => callback(true) }
     ]);
 }
 
@@ -451,9 +451,9 @@ function customPrompt(title, message, callback) {
         <input type="number" id="${inputId}" class="search-box" style="text-align:center;" inputmode="numeric" autofocus>
     `;
     showModal(title, bodyContent, [
-        { text: "Abbrechen", primary: false, onClick: () => callback(null) },
+        { text: "✕", primary: false, onClick: () => callback(null) },
         {
-            text: "OK", primary: true, onClick: () => {
+            text: "✓", primary: true, onClick: () => {
                 const val = document.getElementById(inputId).value;
                 callback(val);
             }
@@ -468,12 +468,12 @@ function customTextPrompt(title, message, callback) {
         <input type="text" id="${inputId}" class="search-box" style="text-align:center;" autofocus autocomplete="off">
     `;
     showModal(title, bodyContent, [
-        { text: "Abbrechen", primary: false, onClick: () => callback(null) },
+        { text: "✕", primary: false, onClick: () => callback(null) },
         {
-            text: "Leeren", primary: false, onClick: () => callback("")
+            text: "🗑️", primary: false, onClick: () => callback("")
         },
         {
-            text: "OK", primary: true, onClick: () => {
+            text: "✓", primary: true, onClick: () => {
                 const val = document.getElementById(inputId).value;
                 callback(val);
             }
