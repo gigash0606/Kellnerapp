@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="WaiterPad">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1046/1046857.png">
+    <meta name="theme-color" content="#1a9282">
+    <link rel="manifest" href="manifest.json">
+    <title>WaiterPad</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header id="headerTitle">Tische</header>
+
+    <div id="modalContainer"></div>
+
+    <div class="container">
+        <div id="tableGrid" class="grid">
+            <!-- Tables generated via script.js -->
+        </div>
+
+        <div id="orderInterface" style="display:none;">
+            <input type="text" id="numSearch" class="search-box" placeholder="ID oder Name suchen..." inputmode="text"
+                autocomplete="off" oninput="searchMenu()">
+            <div id="searchResults" class="results"></div>
+
+            <div class="order-header">
+                <h3>Bestellung</h3>
+                <span class="delete-hint">(Tippe ✕ zum Löschen)</span>
+            </div>
+
+            <div id="activeOrder" class="order-list"></div>
+
+            <div class="footer-btns">
+                <button class="delete-table-btn" onclick="removeTable(currentTable)">Tisch löschen</button>
+                <button class="clear-btn" onclick="clearTable()">Tisch leeren</button>
+                <button class="back-btn" onclick="backToTables()">Zurück</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
