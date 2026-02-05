@@ -11,7 +11,7 @@
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
     --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
-    --font-scale: 1.3;
+    --font-scale: 1.5;
     /* Increased default zoom */
 }
 
@@ -54,14 +54,14 @@ button {
 header {
     background: var(--primary-gradient);
     color: white;
-    /* Taller header for Dynamic Island: 85px base instead of 65px */
-    height: calc(85px + env(safe-area-inset-top));
+    /* Taller header for Dynamic Island: 100px base */
+    height: calc(100px + env(safe-area-inset-top));
     padding-top: env(safe-area-inset-top);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-left: 15px;
-    padding-right: 15px;
+    padding-left: 20px;
+    padding-right: 20px;
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -69,7 +69,7 @@ header {
 }
 
 .header-center {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     /* Uses rem to scale with body font-size */
     font-weight: 700;
     letter-spacing: -0.5px;
@@ -95,8 +95,8 @@ header {
     padding-bottom: calc(40px + env(safe-area-inset-bottom));
     max-width: 600px;
     margin: auto;
-    /* Adjust height for taller header (85px) */
-    height: calc(100vh - 85px - env(safe-area-inset-top));
+    /* Adjust height for taller header (100px) */
+    height: calc(100vh - 100px - env(safe-area-inset-top));
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
 }
@@ -199,11 +199,11 @@ header {
 
 .search-box {
     width: 100%;
-    padding: 18px;
-    font-size: 1.25rem;
+    padding: 22px;
+    font-size: 1.4rem;
     border: 1px solid #ddd;
     border-radius: 12px;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     outline: none;
     box-shadow: var(--shadow-sm);
 }
@@ -217,10 +217,10 @@ header {
 }
 
 .result-item {
-    padding: 15px 20px;
+    padding: 18px 24px;
     border-bottom: 1px solid #eee;
     cursor: pointer;
-    font-size: 1.125rem;
+    font-size: 1.2rem;
 }
 
 .order-list {
@@ -247,12 +247,12 @@ header {
 }
 
 .qty-btn {
-    width: 44px;
-    height: 44px;
+    width: 54px;
+    height: 54px;
     border-radius: 50%;
     border: 1px solid #ddd;
     background: #fff;
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -260,9 +260,9 @@ header {
 }
 
 .qty-val {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     font-weight: bold;
-    min-width: 25px;
+    min-width: 35px;
     text-align: center;
 }
 
@@ -270,10 +270,10 @@ header {
     background: #fff5f5;
     color: var(--danger);
     border: 1px solid #ffebeb;
-    padding: 0 15px;
-    height: 44px;
+    padding: 0 20px;
+    height: 54px;
     border-radius: 10px;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
 }
 
 .footer-btns {
@@ -286,9 +286,9 @@ header {
 
 .footer-btns button {
     flex: 1;
-    height: 100px;
+    height: 120px;
     /* Even larger for professional touch */
-    padding: 15px;
+    padding: 20px;
     border-radius: var(--border-radius);
     border: none;
     font-weight: 700;

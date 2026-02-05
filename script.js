@@ -40,7 +40,7 @@ function generateTables() {
     // "Add Table" Card
     const addCard = document.createElement('div');
     addCard.className = 'card add-table-card';
-    addCard.innerHTML = `<div style="font-size:3rem; color:var(--accent-green); font-weight:bold;">+</div>`;
+    addCard.innerHTML = `<div style="font-size:4rem; color:var(--accent-green); font-weight:bold;">+</div>`;
     addCard.onclick = addTable;
     grid.appendChild(addCard);
 
@@ -51,7 +51,7 @@ function generateTables() {
         card.className = `card table-card ${hasOrder ? 'has-order' : ''}`;
 
         card.innerHTML = `
-            <div class="card-body" style="font-size: 3rem; font-weight: bold; color: #444;">
+            <div class="card-body" style="font-size: 3.5rem; font-weight: bold; color: #444;">
                 ${num}
             </div>
         `;
@@ -136,14 +136,19 @@ function searchMenu() {
     if (!val) return;
 
     const query = val.toLowerCase();
+    const currentItems = allOrders[currentTable] || [];
+
     const matches = menu.filter(item =>
         item.id.toString().startsWith(query) ||
         item.name.toLowerCase().includes(query)
     );
     matches.forEach(item => {
+        const orderItem = currentItems.find(i => i.id === item.id);
+        const qtyLabel = orderItem ? `<span style="background:var(--primary); color:white; padding:2px 10px; border-radius:10px; margin-left:10px; font-size:1rem;">${orderItem.quantity}</span>` : "";
+
         const div = document.createElement('div');
         div.className = 'result-item';
-        div.innerHTML = `<strong>${item.id}</strong>. ${item.name}`;
+        div.innerHTML = `<strong>${item.id}</strong>. ${item.name} ${qtyLabel}`;
         div.onclick = () => addToOrder(item);
         resultsDiv.appendChild(div);
     });
@@ -203,7 +208,7 @@ function renderOrder() {
         const div = document.createElement('div');
         div.className = 'order-row';
         div.innerHTML = `
-            <span class="item-name">${item.name}</span>
+            <span class="item-name"><span style="color:#888; font-size:0.9rem; font-weight:normal;">#${item.id}</span> ${item.name}</span>
             <div class="item-controls">
                 <button class="qty-btn" onclick="updateQuantity(${item.id}, -1)">-</button>
                 <span class="qty-val">${item.quantity}</span>
@@ -241,7 +246,7 @@ function customPrompt(title, message, callback) {
     const inputId = "modalInput";
     const bodyContent = `
         <p>${message}</p>
-        <input type="number" id="${inputId}" class="search-box" style="margin-top:10px; text-align:center;" autofocus>
+        <input type="number" id="${inputId}" class="search-box" style="margin-top:10px; text-align:center;" inputmode="numeric" autofocus>
     `;
     showModal(title, bodyContent, [
         { text: "Abbrechen", primary: false, onClick: () => callback(null) },
