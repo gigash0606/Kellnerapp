@@ -120,7 +120,7 @@ function backToTables() {
     const btn = document.getElementById('kbToggle');
     if (btn) {
         btn.classList.remove('active');
-        btn.innerText = '⌨️';
+        btn.innerText = '123';
     }
     document.getElementById('searchResults').innerHTML = "";
     generateTables();
@@ -290,11 +290,11 @@ function toggleKeyboard() {
     if (input.inputMode === 'decimal') {
         input.inputMode = 'text';
         btn.classList.add('active');
-        btn.innerText = 'Abc'; // Show text-mode indicator
+        btn.innerText = 'ABC';
     } else {
         input.inputMode = 'decimal';
         btn.classList.remove('active');
-        btn.innerText = '⌨️'; // Show keyboard emoji
+        btn.innerText = '123';
     }
 
     // Briefly blur and refocus to trigger the keyboard change on mobile
