@@ -11,8 +11,8 @@
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
     --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
-    --font-scale: 2.6;
-    /* Massive default zoom */
+    --font-scale: 2.5;
+    /* Doubled scale for harmonic oversized UI */
 }
 
 /* Base styles and mobile optimization */
@@ -54,14 +54,14 @@ button {
 header {
     background: var(--primary-gradient);
     color: white;
-    /* Massive header for massive UI */
-    height: calc(160px + env(safe-area-inset-top));
+    /* Doubled header height: 180px plus safe area */
+    height: calc(180px + env(safe-area-inset-top));
     padding-top: env(safe-area-inset-top);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-left: 25px;
-    padding-right: 25px;
+    padding-left: 40px;
+    padding-right: 40px;
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -91,32 +91,31 @@ header {
 
 
 .container {
-    padding: 20px;
-    padding-bottom: calc(40px + env(safe-area-inset-bottom));
-    max-width: 600px;
-    margin: auto;
-    /* Adjust height for massive header (160px) */
-    height: calc(100vh - 160px - env(safe-area-inset-top));
+    /* Adjust height for 180px header */
+    height: calc(100vh - 180px - env(safe-area-inset-top));
+    padding: 40px;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
 }
 
-/* Grid Layout */
+/* Grid Layout: 3 columns base, doubled gaps */
 .grid {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 30px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
 }
 
-@media (min-width: 480px) {
+@media (min-width: 600px) {
     .grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
     }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 900px) {
     .grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(5, 1fr);
+        gap: 24px;
     }
 }
 
@@ -199,13 +198,14 @@ header {
 
 .search-box {
     width: 100%;
-    padding: 30px;
-    font-size: 1.6rem;
-    border: 2px solid #ddd;
-    border-radius: 16px;
-    margin-bottom: 25px;
+    padding: 40px;
+    font-size: 1.5rem;
+    border: 4px solid #e0e0e0;
+    border-radius: 24px;
+    margin-bottom: 40px;
     outline: none;
     box-shadow: var(--shadow-sm);
+    background: #fdfdfd;
 }
 
 .results {
@@ -255,33 +255,40 @@ header {
 }
 
 .qty-btn {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: 2px solid #ddd;
-    background: #fff;
+    width: 100px;
+    height: 100px;
+    border-radius: 28px;
+    border: none;
+    background: #f0f2f5;
+    color: var(--text);
     font-size: 2rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: var(--shadow-sm);
+    transition: all 0.2s;
+}
+
+.qty-btn:active {
+    background: #e4e6eb;
+    transform: scale(0.9);
 }
 
 .qty-val {
-    font-size: 1.8rem;
-    font-weight: bold;
-    min-width: 50px;
+    font-size: 1.6rem;
+    font-weight: 700;
+    min-width: 60px;
     text-align: center;
 }
 
 .del-btn {
     background: #fff5f5;
     color: var(--danger);
-    border: 2px solid #ffebeb;
+    border: none;
     padding: 0 30px;
-    height: 80px;
-    border-radius: 16px;
+    height: 100px;
+    border-radius: 28px;
     font-size: 1.5rem;
+    font-weight: bold;
 }
 
 .footer-btns {
@@ -294,10 +301,10 @@ header {
 
 .footer-btns button {
     flex: 1;
-    height: 180px;
-    /* Massive for professional touch */
-    padding: 25px;
-    border-radius: var(--border-radius);
+    height: 170px;
+    /* Doubled premium height */
+    padding: 30px;
+    border-radius: 32px;
     border: none;
     font-weight: 700;
     font-size: 1.2rem;

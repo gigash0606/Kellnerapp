@@ -40,7 +40,7 @@ function generateTables() {
     // "Add Table" Card
     const addCard = document.createElement('div');
     addCard.className = 'card add-table-card';
-    addCard.innerHTML = `<div style="font-size:4rem; color:var(--accent-green); font-weight:bold;">+</div>`;
+    addCard.innerHTML = `<div style="font-size:6rem; color:var(--accent-green); font-weight:bold;">+</div>`;
     addCard.onclick = addTable;
     grid.appendChild(addCard);
 
@@ -51,7 +51,7 @@ function generateTables() {
         card.className = `card table-card ${hasOrder ? 'has-order' : ''}`;
 
         card.innerHTML = `
-            <div class="card-body" style="font-size: 4.5rem; font-weight: bold; color: #444;">
+            <div class="card-body" style="font-size: 5rem; font-weight: bold; color: #444;">
                 ${num}
             </div>
         `;
