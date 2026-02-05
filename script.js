@@ -144,14 +144,14 @@ function searchMenu() {
     );
     matches.forEach(item => {
         const orderItem = currentItems.find(i => i.id === item.id);
-        const qtyLabel = orderItem ? `<span style="background:var(--primary); color:white; padding:10px 30px; border-radius:40px; font-size:1.8rem; font-weight:800;">${orderItem.quantity}x</span>` : "";
+        const qtyLabel = orderItem ? `<span style="background:var(--primary); color:white; padding:10px 30px; border-radius:40px; font-size:3.6rem; font-weight:800;">${orderItem.quantity}x</span>` : "";
 
         const div = document.createElement('div');
         div.className = 'result-item';
         div.innerHTML = `
             <div style="display:flex; align-items:center; gap:30px; flex:1;">
-                <span style="color:var(--primary); font-weight:900; min-width:80px; font-size:2.2rem;">${item.id}</span>
-                <span style="font-weight:800; font-size:2.2rem;">${item.name}</span>
+                <span style="color:var(--primary); font-weight:900; min-width:80px; font-size:3rem;">${item.id}</span>
+                <span style="font-weight:800; font-size:3rem;">${item.name}</span>
             </div>
             ${qtyLabel}
         `;
@@ -206,7 +206,7 @@ function renderOrder() {
     const items = allOrders[currentTable] || [];
 
     if (items.length === 0) {
-        container.innerHTML = '<div style="padding:40px; color:#aaa; text-align:center;">Keine Bestellung</div>';
+        container.innerHTML = '<div style="padding:40px; color:#aaa; text-align:center; font-size: 3rem;">Keine Bestellung</div>';
         return;
     }
 
