@@ -318,12 +318,14 @@ header {
 }
 
 .qty-group {
-    display: flex;
+    display: grid;
+    grid-template-columns: 100px 80px 100px;
     align-items: center;
     gap: 15px;
     background: #f8f9fa;
     padding: 5px;
     border-radius: 30px;
+    width: fit-content;
 }
 
 .qty-btn {

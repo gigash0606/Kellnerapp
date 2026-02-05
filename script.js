@@ -70,7 +70,7 @@ function generateTables() {
     });
 }
 function removeTable(num) {
-    customConfirm("Tisch löschen", `Möchten Sie Tisch ${num} wirklich löschen?`, (confirmed) => {
+    customConfirm("Tisch löschen", `Tisch ${num} löschen?`, (confirmed) => {
         if (confirmed) {
             tables = tables.filter(t => t !== num);
             localStorage.setItem('waiterTables', JSON.stringify(tables));
@@ -83,24 +83,25 @@ function removeTable(num) {
 }
 
 function addTable() {
-    customPrompt("Neuer Tisch", "Tischnummer eingeben:", (num) => {
+    customPrompt("Neuer Tisch", "Tischnummer:", (num) => {
         if (!num) return;
         const tableNum = parseInt(num);
         if (isNaN(tableNum)) {
-            customAlert("Fehler", "Bitte eine gültige Nummer eingeben.");
+            customAlert("Fehler", "Ungültige Nummer");
             return;
         }
         if (tableNum <= 0) {
-            customAlert("Fehler", "Bitte eine Nummer größer als 0 eingeben.");
+            customAlert("Fehler", "Nummer > 0 erforderlich");
             return;
         }
         if (tables.includes(tableNum)) {
-            customAlert("Fehler", "Tisch existiert bereits.");
+            customAlert("Fehler", "Tisch existiert bereits");
             return;
         }
         tables.push(tableNum);
         localStorage.setItem('waiterTables', JSON.stringify(tables));
         generateTables();
+        selectTable(tableNum);
     });
 }
 
@@ -345,7 +346,7 @@ function removeFromOrder(uid) {
     const item = allOrders[currentTable].find(i => i.uid === uid);
     const itemName = item ? item.name : "Artikel";
 
-    customConfirm("Artikel entfernen", `Möchten Sie ${itemName} wirklich aus der Bestellung entfernen?`, (confirmed) => {
+    customConfirm("Entfernen", `${itemName} entfernen?`, (confirmed) => {
         if (confirmed) {
             allOrders[currentTable] = allOrders[currentTable].filter(i => i.uid !== uid);
             saveAndRender();
@@ -379,7 +380,7 @@ function renderOrder() {
             <div class="item-controls">
                 <button class="comment-btn" onclick="editComment(${item.uid})">📝</button>
                 <div class="qty-group">
-                    <button class="qty-btn" onclick="updateQuantity(${item.uid}, -1)">-</button>
+                    ${item.quantity > 1 ? `<button class="qty-btn" onclick="updateQuantity(${item.uid}, -1)">-</button>` : '<button class="qty-btn" style="visibility:hidden; pointer-events:none;">-</button>'}
                     <span class="qty-val">${item.quantity}</span>
                     <button class="qty-btn" onclick="updateQuantity(${item.uid}, 1)">+</button>
                 </div>
@@ -433,7 +434,7 @@ function restackItems() {
 }
 
 function clearTable() {
-    customConfirm("Tisch leeren", "Möchten Sie alle Bestellungen von diesem Tisch wirklich löschen?", (confirmed) => {
+    customConfirm("Tisch leeren", "Alle Bestellungen löschen?", (confirmed) => {
         if (confirmed) {
             delete allOrders[currentTable];
             saveAndRender();
