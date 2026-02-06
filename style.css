@@ -112,7 +112,8 @@ header {
     flex: 1;
     overflow-y: auto;
     width: 100%;
-    padding: 20px 20px 180px;
+    /* 180px bottom padding plus safe area for iPhone home indicator */
+    padding: 20px 20px calc(180px + env(safe-area-inset-bottom));
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
     /* ONLY allow vertical panning. This is the magic fix for double-tap zoom. */
