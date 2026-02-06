@@ -24,6 +24,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         lastTouchEnd = now;
     }, false);
+
+    // Global click handler to maintain focus in table menu
+    document.addEventListener('click', (e) => {
+        if (currentTable) {
+            // If tapping anywhere that's NOT a button, input, or modal, refocus search
+            if (!e.target.closest('button, input, .modal, .card')) {
+                const input = document.getElementById('numSearch');
+                if (input && document.activeElement !== input) {
+                    input.focus();
+                }
+            }
+        }
+    });
 });
 
 
@@ -112,11 +125,20 @@ function selectTable(num) {
     document.getElementById('tableGrid').style.display = 'none';
     document.getElementById('orderInterface').style.display = 'block';
 
+    const container = document.querySelector('.container');
+    if (container) container.scrollTop = 0;
+
     // Safety check for header title element inside new layout
     const titleEl = document.getElementById('headerTitle').querySelector('.header-center');
     if (titleEl) titleEl.innerText = "Tisch " + num;
 
     renderOrder();
+
+    // Focus search box after a short delay to ensure it's visible
+    setTimeout(() => {
+        const input = document.getElementById('numSearch');
+        if (input) input.focus();
+    }, 100);
 }
 
 function backToTables() {
@@ -125,6 +147,10 @@ function backToTables() {
     document.getElementById('tableGrid').style.display = 'grid';
     document.getElementById('orderInterface').style.display = 'none';
     document.getElementById('headerTitle').querySelector('.header-center').innerText = "Tische";
+
+    const container = document.querySelector('.container');
+    if (container) container.scrollTop = 0;
+
     const input = document.getElementById('numSearch');
     input.value = "";
     input.inputMode = 'decimal';
@@ -140,7 +166,7 @@ function backToTables() {
 
 // ... Menu and Order logic remains similar but optimized ...
 const menu = [
-    // Food Items
+    // FOOD
     { id: 100, name: "CARPACCIO DIE MANZO" },
     { id: 101, name: "VITELLO TONNATO" },
     { id: 102, name: "FORMAGGIO DI CAPRA" },
@@ -172,22 +198,22 @@ const menu = [
     { id: 213, name: "TAGLIATELLE SALMONE" },
     { id: 214, name: "PENNE ALLA CACCIATORA" },
     { id: 215, name: "SPAGHETTI PUTTANESCA CON ΤΟΝΝΟ" },
-    { id: 300, name: "MARGHERITA" },
-    { id: 301, name: "SALAME" },
-    { id: 302, name: "PROSCIUTTO E FUNGHI" },
-    { id: 304, name: "PARMIGIANA" },
-    { id: 305, name: "SALSICCIA" },
-    { id: 306, name: "VEGETARIANA" },
-    { id: 307, name: "DIAVOLA" },
-    { id: 308, name: "SFIZIOSA" },
-    { id: 309, name: "BUFALINA" },
-    { id: 310, name: "RUSTICA" },
-    { id: 312, name: "LE QUATTRO STAGIONI" },
-    { id: 313, name: "QUATTRO FORMAGGI" },
-    { id: 314, name: "SALMONE (PIZZA)" },
-    { id: 315, name: "D'ITALY (PIZZA)" },
-    { id: 316, name: "ZOLA E PARMA" },
-    { id: 317, name: "ΤΟΝΝO E CIPOLLA" },
+    { id: 300, name: "PIZZA MARGHERITA" },
+    { id: 301, name: "PIZZA SALAME" },
+    { id: 302, name: "PIZZA PROSCIUTTO E FUNGHI" },
+    { id: 304, name: "PIZZA PARMIGIANA" },
+    { id: 305, name: "PIZZA SALSICCIA" },
+    { id: 306, name: "PIZZA VEGETARIANA" },
+    { id: 307, name: "PIZZA DIAVOLA" },
+    { id: 308, name: "PIZZA SFIZIOSA" },
+    { id: 309, name: "PIZZA BUFALINA" },
+    { id: 310, name: "PIZZA RUSTICA" },
+    { id: 312, name: "PIZZA LE QUATTRO STAGIONI" },
+    { id: 313, name: "PIZZA QUATTRO FORMAGGI" },
+    { id: 314, name: "PIZZA SALMONE" },
+    { id: 315, name: "PIZZA D'ITALY" },
+    { id: 316, name: "PIZZA ZOLA E PARMA" },
+    { id: 317, name: "PIZZA ΤΟΝΝO E CIPOLLA" },
     { id: 400, name: "SALTIMBOCCA ALLA ROMANA" },
     { id: 401, name: "FILETTO ALLA GRIGLIA" },
     { id: 402, name: "FILETTO AL PEPE VERDE" },
@@ -201,7 +227,7 @@ const menu = [
     { id: 417, name: "TORTINO AL CIOCCOLATO" },
     { id: 418, name: "CRÈME BRÛLÉE" },
 
-    // Drink Items
+    // DRINKS
     { id: 1, name: "APEROL SPRITZ" },
     { id: 2, name: "CAMPARI SPRITZ" },
     { id: 3, name: "CAMPARI AMALFI" },
@@ -212,55 +238,81 @@ const menu = [
     { id: 8, name: "GIN & TONIC" },
     { id: 9, name: "MARTINI BIANCO" },
     { id: 10, name: "HUGO" },
-    { id: 11, name: "CRODINO | alkoholfrei" },
-    { id: 12, name: "LAVANDA SPRITZ | alkoholfrei" },
-    { id: 13, name: "LIMOADE SPRITZ | alkoholfrei" },
-    { id: 20, name: "AQUA PANNA (STILL)" },
-    { id: 21, name: "SAN PELLEGRINO (MEDIUM)" },
-    { id: 22, name: "COCA COLA" },
-    { id: 23, name: "SPRITE" },
-    { id: 24, name: "FANTA" },
-    { id: 25, name: "SPEZI" },
-    { id: 26, name: "GINGER ALE" },
-    { id: 27, name: "TONIC WATER" },
-    { id: 28, name: "BITTER LEMON" },
-    { id: 29, name: "BANANENSAFT" },
-    { id: 30, name: "ORANGENSAFT" },
-    { id: 31, name: "KIRSCHSAFT" },
-    { id: 32, name: "APFELSAFT" },
-    { id: 33, name: "RHABARBERSAFT" },
-    { id: 34, name: "JOHANNISBEERSAFT" },
-    { id: 35, name: "KIBA" },
-    { id: 50, name: "ROTWEIN" },
-    { id: 51, name: "WEISSWEIN" },
-    { id: 52, name: "ROSÉ" },
-    { id: 53, name: "FRIZZANTINO" },
-    { id: 54, name: "LAMBRUSCO" },
-    { id: 55, name: "WEISSWEINSCHORLE" },
-    { id: 56, name: "PRIMITIVO" },
-    { id: 57, name: "CHIANTI CLASSICO" },
-    { id: 58, name: "CHARDONNAY" },
-    { id: 59, name: "PINOT GRIGIO" },
-    { id: 70, name: "GRAPPA" },
-    { id: 71, name: "LIMONCELLO" },
-    { id: 72, name: "AVERNA" },
-    { id: 73, name: "RAMAZOTTI" },
-    { id: 74, name: "AMARO DEL CAPO" },
-    { id: 75, name: "SAMBUCA" },
-    { id: 76, name: "FERNET BRANCHA" },
-    { id: 80, name: "CAFFE" },
-    { id: 81, name: "CAPPUCCINO" },
-    { id: 82, name: "LATTE MACCHIATO" },
-    { id: 83, name: "ESPRESSO" },
-    { id: 84, name: "ESPRESSO DOPPIO" },
-    { id: 85, name: "ESPRESSO MACCHIATO" },
-    { id: 86, name: "TEE" },
-    { id: 90, name: "PAULANDER PILS" },
-    { id: 91, name: "PAULANER WEISSBIER" },
-    { id: 92, name: "RADLER" },
-    { id: 93, name: "PAULANER HEFEWEIZEN DUNKEL" },
-    { id: 94, name: "PAULANER PILS alkoholfrei" },
-    { id: 95, name: "PAULANER WEISSBIER alkoholfrei" }
+    { id: 11, name: "CRODINO" },
+    { id: 12, name: "LAVANDA SPRITZ" },
+    { id: 13, name: "LIMOADE SPRITZ" },
+    { id: 20, name: "AQUA PANNA 0,25l" },
+    { id: 21, name: "AQUA PANNA 0,75l" },
+    { id: 22, name: "SAN PELLEGRINO 0,25l" },
+    { id: 23, name: "SAN PELLEGRINO 0,75l" },
+    { id: 24, name: "COCA COLA 0,2l" },
+    { id: 25, name: "COCA COLA 0,4l" },
+    { id: 26, name: "SPRITE 0,2l" },
+    { id: 27, name: "SPRITE 0,4l" },
+    { id: 28, name: "FANTA 0,2l" },
+    { id: 29, name: "FANTA 0,4l" },
+    { id: 30, name: "SPEZI 0,2l" },
+    { id: 31, name: "SPEZI 0,4l" },
+    { id: 32, name: "GINGER ALE 0,2l" },
+    { id: 33, name: "GINGER ALE 0,4l" },
+    { id: 34, name: "TONIC WATER 0,2l" },
+    { id: 35, name: "TONIC WATER 0,4l" },
+    { id: 36, name: "BITTER LEMON 0,2l" },
+    { id: 37, name: "BITTER LEMON 0,4l" },
+    { id: 38, name: "BANANENSAFT 0,2l" },
+    { id: 39, name: "BANANENSAFT 0,4l" },
+    { id: 40, name: "ORANGENSAFT 0,2l" },
+    { id: 41, name: "ORANGENSAFT 0,4l" },
+    { id: 42, name: "KIRSCHSAFT 0,2l" },
+    { id: 43, name: "KIRSCHSAFT 0,4l" },
+    { id: 44, name: "APFELSAFT 0,2l" },
+    { id: 45, name: "APFELSAFT 0,4l" },
+    { id: 46, name: "RHABARBERSAFT 0,2l" },
+    { id: 47, name: "RHABARBERSAFT 0,4l" },
+    { id: 48, name: "JOHANNISBEERSAFT 0,2l" },
+    { id: 49, name: "JOHANNISBEERSAFT 0,4l" },
+    { id: 50, name: "KIBA 0,2l" },
+    { id: 51, name: "KIBA 0,4l" },
+    { id: 60, name: "ROTWEIN 0,2l" },
+    { id: 61, name: "WEISSWEIN 0,2l" },
+    { id: 62, name: "ROSÉ 0,2l" },
+    { id: 63, name: "FRIZZANTINO 0,2l" },
+    { id: 64, name: "LAMBRUSCO 0,2l" },
+    { id: 65, name: "WEISSWEINSCHORLE 0,2l" },
+    { id: 66, name: "PRIMITIVO 0,2l" },
+    { id: 67, name: "CHIANTI CLASSICO 0,2l" },
+    { id: 68, name: "CHARDONNAY 0,2l" },
+    { id: 69, name: "PINOT GRIGIO 0,2l" },
+    { id: 70, name: "GRAPPA 2cl" },
+    { id: 71, name: "GRAPPA 4cl" },
+    { id: 72, name: "LIMONCELLO 2cl" },
+    { id: 73, name: "LIMONCELLO 4cl" },
+    { id: 74, name: "AVERNA 2cl" },
+    { id: 75, name: "AVERNA 4cl" },
+    { id: 76, name: "RAMAZOTTI 2cl" },
+    { id: 77, name: "RAMAZOTTI 4cl" },
+    { id: 78, name: "AMARO DEL CAPO 2cl" },
+    { id: 79, name: "AMARO DEL CAPO 4cl" },
+    { id: 80, name: "SAMBUCA 2cl" },
+    { id: 81, name: "SAMBUCA 4cl" },
+    { id: 82, name: "FERNET BRANCHA 2cl" },
+    { id: 83, name: "FERNET BRANCHA 4cl" },
+    { id: 84, name: "CAFFE" },
+    { id: 85, name: "CAPPUCCINO" },
+    { id: 86, name: "LATTE MACCHIATO" },
+    { id: 87, name: "ESPRESSO" },
+    { id: 88, name: "ESPRESSO DOPPIO" },
+    { id: 89, name: "ESPRESSO MACCHIATO" },
+    { id: 90, name: "TEE" },
+    { id: 91, name: "PAULANDER PILS 0,3l" },
+    { id: 92, name: "PAULANDER PILS 0,5l" },
+    { id: 93, name: "PAULANER WEISSBIER 0,3l" },
+    { id: 94, name: "PAULANER WEISSBIER 0,5l" },
+    { id: 95, name: "RADLER 0,3l" },
+    { id: 96, name: "RADLER 0,5l" },
+    { id: 97, name: "PAULANER HEFEWEIZEN DUNKEL 0,5l" },
+    { id: 98, name: "PAULANER PILS alkoholfrei 0,33l" },
+    { id: 99, name: "PAULANER WEISSBIER alkoholfrei 0,5l" }
 ];
 
 function searchMenu() {
@@ -270,21 +322,30 @@ function searchMenu() {
     if (!val) return;
 
     const query = val.toLowerCase();
+    // For ID matching, strip leading zeros so "01" matches ID 1
+    const idQuery = query.replace(/^0+/, '');
     const currentItems = allOrders[currentTable] || [];
 
     const matches = menu.filter(item =>
-        item.id.toString().startsWith(query) ||
+        (idQuery !== '' && item.id.toString().startsWith(idQuery)) ||
         item.name.toLowerCase().includes(query)
     );
+
+    // Sort result by ID numerically: lowest number up
+    matches.sort((a, b) => a.id - b.id);
+
     matches.forEach(item => {
         const orderItem = currentItems.find(i => i.id === item.id);
         const qtyLabel = orderItem ? `<span style="background:var(--primary); color:white; padding:10px 30px; border-radius:40px; font-size:2.2rem; font-weight:800;">${orderItem.quantity}x</span>` : "";
+
+        // Pad display ID to at least 2 digits
+        const displayId = item.id.toString().padStart(2, '0');
 
         const div = document.createElement('div');
         div.className = 'result-item';
         div.innerHTML = `
             <div style="display:flex; align-items:center; gap:30px; flex:1;">
-                <span style="color:var(--primary); font-weight:900; min-width:80px; font-size:2.2rem;">${item.id}</span>
+                <span style="color:var(--primary); font-weight:900; min-width:80px; font-size:2.2rem;">${displayId}</span>
                 <span style="font-weight:800; font-size:2.2rem;">${item.name}</span>
             </div>
             ${qtyLabel}
@@ -370,11 +431,12 @@ function renderOrder() {
     }
 
     items.forEach(item => {
+        const displayId = item.id.toString().padStart(2, '0');
         const div = document.createElement('div');
         div.className = 'order-row';
         div.innerHTML = `
             <div class="item-info">
-                <span class="item-name"><span style="color:var(--primary); font-weight:bold;">${item.id}.</span> ${item.name}</span>
+                <span class="item-name"><span style="color:var(--primary); font-weight:bold;">${displayId}.</span> ${item.name}</span>
                 ${item.comment ? `<div class="item-comment">${item.comment}</div>` : ""}
             </div>
             <div class="item-controls">
