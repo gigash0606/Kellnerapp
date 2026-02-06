@@ -18,37 +18,76 @@
 <body>
 
     <header id="headerTitle">
-        <div class="header-left"></div>
+        <div class="header-left">
+            <button id="backToTablesBtn" class="header-back-btn" onclick="backToTables()" style="display:none;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                    stroke-linejoin="round" style="width:20px; height:20px;">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+                Tische
+            </button>
+        </div>
         <div class="header-center">Tische</div>
-        <div class="header-right"></div>
+        <div class="header-right">
+            <button id="infoBtn" class="header-icon-btn" onclick="showLegalInfo()" title="Informationen">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+                </svg>
+            </button>
+            <button id="deleteAllBtn" class="header-icon-btn" onclick="confirmDeleteAll()" title="Alle Tische löschen">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+            </button>
+        </div>
     </header>
 
     <div id="modalContainer"></div>
 
-    <div class="container">
+    <div id="tableGridContainer" class="container">
         <div id="tableGrid" class="grid">
             <!-- Tables generated via script.js -->
         </div>
+    </div>
 
-        <div id="orderInterface" style="display:none;">
-            <div class="search-container">
-                <input type="text" id="numSearch" class="search-box" placeholder="ID oder Name suchen..."
-                    inputmode="decimal" autocomplete="off" oninput="searchMenu()">
-                <button id="kbToggle" class="kb-toggle-btn" onclick="toggleKeyboard()"
-                    title="Tastatur wechseln">123</button>
-            </div>
-            <div id="searchResults" class="results"></div>
+    <div id="orderInterface" style="display:none;">
+        <div id="activeOrder" class="order-list"></div>
 
-            <div class="order-header">
-                <h3>Bestellung</h3>
-            </div>
-
-            <div id="activeOrder" class="order-list"></div>
-
-            <div class="footer-btns">
+        <div class="table-footer-controls">
+            <div class="footer-action-btns">
+                <button class="clear-table-btn" onclick="clearTable()">Tisch leeren</button>
                 <button class="delete-table-btn" onclick="removeTable(currentTable)">Tisch löschen</button>
-                <button class="clear-btn" onclick="clearTable()">Tisch leeren</button>
-                <button class="back-btn" onclick="backToTables()">Zurück</button>
+            </div>
+
+            <div class="search-section">
+                <div id="searchResults" class="results"></div>
+                <div class="search-bar-wrapper">
+                    <div class="search-icon-side">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </div>
+                    <input type="text" id="numSearch" class="modern-search-box" placeholder="Suche..."
+                        inputmode="decimal" autocomplete="off" oninput="searchMenu()">
+                    <button id="kbToggle" class="kb-switch-btn" onclick="toggleKeyboard()">
+                        <svg id="kbIconNum" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="5" width="18" height="14" rx="2" ry="2"></rect>
+                            <line x1="7" y1="10" x2="7" y2="10"></line>
+                            <line x1="11" y1="10" x2="11" y2="10"></line>
+                            <line x1="15" y1="10" x2="15" y2="10"></line>
+                            <line x1="7" y1="14" x2="7" y2="14"></line>
+                            <line x1="11" y1="14" x2="11" y2="14"></line>
+                            <line x1="15" y1="14" x2="15" y2="14"></line>
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
     </div>

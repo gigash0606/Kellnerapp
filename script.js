@@ -125,19 +125,18 @@ function addTable() {
 function selectTable(num) {
     currentTable = num;
     localStorage.setItem('waiterCurrentTable', num);
-    document.getElementById('tableGrid').style.display = 'none';
-    document.getElementById('orderInterface').style.display = 'block';
+    document.getElementById('tableGridContainer').style.display = 'none';
+    document.getElementById('orderInterface').style.display = 'flex'; // Changed to flex for new layout
 
-    const container = document.querySelector('.container');
-    if (container) container.scrollTop = 0;
-
-    // Safety check for header title element inside new layout
-    const titleEl = document.getElementById('headerTitle').querySelector('.header-center');
-    if (titleEl) titleEl.innerText = "Tisch " + num;
+    // Update Header
+    document.getElementById('backToTablesBtn').style.display = 'flex';
+    document.getElementById('deleteAllBtn').style.display = 'none';
+    document.getElementById('infoBtn').style.display = 'none';
+    document.getElementById('headerTitle').querySelector('.header-center').innerText = "Tisch " + num;
 
     renderOrder();
 
-    // Focus search box after a short delay to ensure it's visible
+    // Focus search box after a short delay
     setTimeout(() => {
         const input = document.getElementById('numSearch');
         if (input) input.focus();
@@ -147,21 +146,17 @@ function selectTable(num) {
 function backToTables() {
     currentTable = null;
     localStorage.removeItem('waiterCurrentTable');
-    document.getElementById('tableGrid').style.display = 'grid';
+    document.getElementById('tableGridContainer').style.display = 'block';
     document.getElementById('orderInterface').style.display = 'none';
-    document.getElementById('headerTitle').querySelector('.header-center').innerText = "Tische";
 
-    const container = document.querySelector('.container');
-    if (container) container.scrollTop = 0;
+    // Update Header
+    document.getElementById('backToTablesBtn').style.display = 'none';
+    document.getElementById('deleteAllBtn').style.display = 'flex';
+    document.getElementById('infoBtn').style.display = 'flex';
+    document.getElementById('headerTitle').querySelector('.header-center').innerText = "Tische";
 
     const input = document.getElementById('numSearch');
     input.value = "";
-    input.inputMode = 'decimal';
-    const btn = document.getElementById('kbToggle');
-    if (btn) {
-        btn.classList.remove('active');
-        btn.innerText = '123';
-    }
     document.getElementById('searchResults').innerHTML = "";
     generateTables();
 }
@@ -364,12 +359,12 @@ function toggleKeyboard() {
 
     if (input.inputMode === 'decimal') {
         input.inputMode = 'text';
-        btn.classList.add('active');
-        btn.innerText = 'ABC';
+        btn.style.background = 'var(--primary)';
+        btn.style.color = 'white';
     } else {
         input.inputMode = 'decimal';
-        btn.classList.remove('active');
-        btn.innerText = '123';
+        btn.style.background = '#9ca3af';
+        btn.style.color = 'white';
     }
 
     // Briefly blur and refocus to trigger the keyboard change on mobile
@@ -429,30 +424,59 @@ function renderOrder() {
     const items = allOrders[currentTable] || [];
 
     if (items.length === 0) {
-        container.innerHTML = '<div style="padding:20px; color:#aaa; text-align:center; font-size: 1.1rem;">Keine Bestellung</div>';
+        container.innerHTML = '<div style="padding:40px; color:#aaa; text-align:center; font-size: 1.1rem;">Keine Bestellung</div>';
         return;
     }
 
     items.forEach(item => {
         const displayId = item.id.toString().padStart(2, '0');
-        const div = document.createElement('div');
-        div.className = 'order-row';
-        div.innerHTML = `
-            <div class="item-info">
-                <span class="item-name"><span style="color:var(--primary); font-weight:bold;">${displayId}.</span> ${item.name}</span>
-                ${item.comment ? `<div class="item-comment">${item.comment}</div>` : ""}
-            </div>
-            <div class="item-controls">
-                <button class="comment-btn" onclick="editComment(${item.uid})">📝</button>
-                <div class="qty-group">
-                    ${item.quantity > 1 ? `<button class="qty-btn" onclick="updateQuantity(${item.uid}, -1)">-</button>` : '<button class="qty-btn" style="visibility:hidden; pointer-events:none;">-</button>'}
-                    <span class="qty-val">${item.quantity}</span>
-                    <button class="qty-btn" onclick="updateQuantity(${item.uid}, 1)">+</button>
+
+        const rowContainer = document.createElement('div');
+        rowContainer.className = 'order-row-container';
+
+        rowContainer.innerHTML = `
+            <div class="swipe-delete-btn" onclick="removeFromOrder(${item.uid})">Löschen</div>
+            <div class="order-row" id="row-${item.uid}">
+                <div class="qty-badge-box">
+                    <span class="qty-badge">${item.quantity}</span>
                 </div>
-                <button class="del-btn" onclick="removeFromOrder(${item.uid})">✕</button>
+                <div class="item-main-info">
+                    <span class="item-name">${item.name}</span>
+                    <span class="item-code">${displayId}</span>
+                </div>
             </div>
         `;
-        container.appendChild(div);
+
+        const row = rowContainer.querySelector('.order-row');
+
+        // Single Tap to Increment
+        row.onclick = (e) => {
+            // If already swiped, a tap should reset it
+            if (row.classList.contains('swiped')) {
+                row.classList.remove('swiped');
+                return;
+            }
+            updateQuantity(item.uid, 1);
+        };
+
+        // Swipe logic
+        let touchStartX = 0;
+        row.ontouchstart = (e) => {
+            touchStartX = e.touches[0].clientX;
+        };
+
+        row.ontouchend = (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const diff = touchStartX - touchEndX;
+
+            if (diff > 50) { // Swipe left
+                row.classList.add('swiped');
+            } else if (diff < -50) { // Swipe right
+                row.classList.remove('swiped');
+            }
+        };
+
+        container.appendChild(rowContainer);
     });
 }
 
@@ -602,5 +626,35 @@ function showModal(title, content, buttons, isHtml = false) {
             }
         });
     }
+}
+
+function confirmDeleteAll() {
+    customConfirm("Alle löschen", "Möchten Sie wirklich ALLE Tische und Daten löschen? Dies kann nicht rückgängig gemacht werden.", (confirmed) => {
+        if (confirmed) {
+            tables = [];
+            allOrders = {};
+            localStorage.setItem('waiterTables', JSON.stringify(tables));
+            localStorage.setItem('waiterData', JSON.stringify(allOrders));
+            localStorage.removeItem('waiterCurrentTable');
+            generateTables();
+        }
+    });
+}
+
+function showLegalInfo() {
+    const legalText = `
+        <div style="text-align:left; line-height:1.6; font-size:0.95rem;">
+            <p>Diese App dient ausschließlich als digitale <strong>Gedächtnisstütze</strong> zum Merken von Bestellungen.</p>
+            <p>Ihr Zweck ist es, den Arbeitsablauf zu beschleunigen und den Gebrauch von Papier zu minimieren.</p>
+            <p><strong>Wichtige Hinweise:</strong></p>
+            <ul style="padding-left:20px;">
+                <li>Die App führt <strong>keine</strong> illegalen Aktivitäten durch.</li>
+                <li>Sie ist kein offizielles Kassensystem.</li>
+                <li>Alle Daten werden lokal in Ihrem Browser gespeichert.</li>
+            </ul>
+            <p><em>Viel Spaß bei der Arbeit!</em></p>
+        </div>
+    `;
+    showModal("Information", legalText, [{ text: "Verstanden", primary: true }], true);
 }
 
