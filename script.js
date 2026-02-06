@@ -7,22 +7,17 @@ document.addEventListener('DOMContentLoaded', () => {
         selectTable(parseInt(savedTable));
     }
 
-
-
     // Register Service Worker
     if ('serviceWorker' in navigator) {
         navigator.worker = navigator.serviceWorker.register('sw.js')
             .then(() => console.log('Service Worker Registered'));
     }
 
-    // PWA DOUBLE-TAP ZOOM SHIELD (iOS Standalone Fix)
-    // This script intercepts quick second-taps that trigger system zoom in PWA mode.
+    // PWA DOUBLE-TAP ZOOM SHIELD
     let lastTap = 0;
     document.addEventListener('touchstart', function (e) {
         const now = Date.now();
         if (now - lastTap < 300) {
-            // If the user taps twice within 300ms, we stop the 2nd tap from triggering the zoom/click.
-            // This is the only way to kill the built-in zoom in iOS PWA mode.
             if (e.touches.length > 1 || now - lastTap < 300) {
                 e.preventDefault();
             }
@@ -30,16 +25,11 @@ document.addEventListener('DOMContentLoaded', () => {
         lastTap = now;
     }, { passive: false });
 
-    // Prevent multi-finger zoom gestures (pinch-to-zoom)
     document.addEventListener('gesturestart', function (e) {
         e.preventDefault();
     });
 
-    // Double-tap zoom is also handled by touch-action: pan-y in CSS.
-    // This JS layer specifically catches what the browser ignores in "standalone" mode.
-
-    // Focus logic: Rely on manual tapping for search focus to prevent accidental keyboard popups during scroll.
-    // Keyboard / VisualViewport Anchor Logic (Optimized for Standalone PWA)
+    // Keyboard / VisualViewport Anchor Logic (Fixed Top Optimization)
     if (window.visualViewport) {
         let ticking = false;
         const updateViewport = () => {
@@ -47,31 +37,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.requestAnimationFrame(() => {
                     const v = window.visualViewport;
                     const h = v.height;
-                    const offset = v.offsetTop;
 
-                    // Update CSS variable for layout height
                     document.documentElement.style.setProperty('--vh', `${h}px`);
-
-                    // In Standalone mode, we want the body to exactly match the visible area
                     document.body.style.height = `${h}px`;
 
-                    const header = document.getElementById('headerTitle');
-                    if (offset > 0) {
-                        // Keyboard is likely visible
-                        // On iOS Standalone, scrolling the window is required to follow the visual viewport
-                        window.scrollTo(0, offset);
-                        if (header) {
-                            header.style.transform = `translateY(${offset}px)`;
-                        }
-                    } else {
-                        // Keyboard is hidden
-                        if (header) {
-                            header.style.transform = `translateY(0)`;
-                        }
-                        if (!document.activeElement || (document.activeElement.tagName !== 'INPUT')) {
-                            window.scrollTo(0, 0);
-                        }
+                    // We FORCE the window back to 0 to keep the top stable
+                    if (window.scrollY !== 0) {
+                        window.scrollTo(0, 0);
                     }
+
+                    const header = document.getElementById('headerTitle');
+                    if (header) {
+                        header.style.transform = 'none';
+                        header.style.top = '0';
+                    }
+
                     ticking = false;
                 });
                 ticking = true;
@@ -80,22 +60,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         window.visualViewport.addEventListener('resize', updateViewport);
         window.visualViewport.addEventListener('scroll', updateViewport);
-        // Passive: true where possible, but here we just want to track
+        window.addEventListener('scroll', updateViewport);
         updateViewport();
     }
 
     const searchInput = document.getElementById('numSearch');
     if (searchInput) {
         searchInput.addEventListener('focus', () => {
-            // Standalone mode benefit: we can be more aggressive with scrollIntoView
+            // Block any initial scroll jumps
             setTimeout(() => {
-                searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 300);
+                window.scrollTo(0, 0);
+                document.body.scrollTop = 0;
+            }, 10);
         });
     }
 });
-
-
 
 let tables = [];
 let allOrders = {};
@@ -718,4 +697,3 @@ function showLegalInfo() {
     `;
     showModal("Information", legalText, [{ text: "Verstanden", primary: true }], true);
 }
-

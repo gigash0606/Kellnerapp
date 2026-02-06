@@ -44,6 +44,7 @@ body {
     top: 0;
     left: 0;
     right: 0;
+    overflow: hidden;
 }
 
 header {
@@ -56,14 +57,12 @@ header {
     justify-content: space-between;
     padding-left: 20px;
     padding-right: 20px;
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
     z-index: 2000;
     flex-shrink: 0;
-    will-change: transform;
-    transition: transform 0.1s ease-out;
 }
 
 .header-center {
