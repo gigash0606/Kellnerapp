@@ -49,9 +49,12 @@ body {
     display: flex;
     flex-direction: column;
     height: 100dvh;
+    min-height: -webkit-fill-available;
     width: 100vw;
     /* Block all gestures on the background to prevent zoom */
     touch-action: none;
+    /* Prevent iOS from auto-scaling text when the keyboard or zoom is triggered */
+    -webkit-text-size-adjust: 100%;
 }
 
 button {

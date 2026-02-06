@@ -11,12 +11,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Register Service Worker
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js')
+        navigator.worker = navigator.serviceWorker.register('sw.js')
             .then(() => console.log('Service Worker Registered'));
     }
 
-    // Double-tap zoom is already handled by touch-action: manipulation in CSS.
-    // Removed JS-based preventDefault on touchend as it can break scrolling momentum.
+    // PWA DOUBLE-TAP ZOOM SHIELD (iOS Standalone Fix)
+    // This script intercepts quick second-taps that trigger system zoom in PWA mode.
+    let lastTap = 0;
+    document.addEventListener('touchstart', function (e) {
+        const now = Date.now();
+        if (now - lastTap < 300) {
+            // If the user taps twice within 300ms, we stop the 2nd tap from triggering the zoom/click.
+            // This is the only way to kill the built-in zoom in iOS PWA mode.
+            if (e.touches.length > 1 || now - lastTap < 300) {
+                e.preventDefault();
+            }
+        }
+        lastTap = now;
+    }, { passive: false });
+
+    // Prevent multi-finger zoom gestures (pinch-to-zoom)
+    document.addEventListener('gesturestart', function (e) {
+        e.preventDefault();
+    });
+
+    // Double-tap zoom is also handled by touch-action: pan-y in CSS.
+    // This JS layer specifically catches what the browser ignores in "standalone" mode.
 
     // Focus logic: Rely on manual tapping for search focus to prevent accidental keyboard popups during scroll.
     // document.addEventListener('click', (e) => { ... }); // Removed to honor request "tapping behind... do nothing"
