@@ -31,29 +31,24 @@
         </div>
 
         <div id="orderInterface" style="display:none;">
-            <div class="order-interface-content">
-                <div class="order-header-main">
-                    <div id="activeOrder" class="order-list"></div>
-                </div>
+            <div class="search-container">
+                <input type="text" id="numSearch" class="search-box" placeholder="ID oder Name suchen..."
+                    inputmode="decimal" autocomplete="off" oninput="searchMenu()">
+                <button id="kbToggle" class="kb-toggle-btn" onclick="toggleKeyboard()"
+                    title="Tastatur wechseln">123</button>
+            </div>
+            <div id="searchResults" class="results"></div>
 
-                <div class="action-buttons">
-                    <button class="action-btn delete-btn-new" onclick="removeTable(currentTable)">Tisch löschen</button>
-                    <button class="action-btn close-btn" onclick="clearTable()">Tisch leeren</button>
-                    <button class="action-btn back-btn-new" onclick="backToTables()">Zurück</button>
-                </div>
+            <div class="order-header">
+                <h3>Bestellung</h3>
+            </div>
 
-                <div id="searchResults" class="results"></div>
+            <div id="activeOrder" class="order-list"></div>
 
-                <div class="search-section">
-                    <div class="search-container">
-                        <div class="search-icons">
-                            <span class="icon search-icon">🔍</span>
-                        </div>
-                        <input type="text" id="numSearch" class="search-box" placeholder="Suchen..." inputmode="decimal"
-                            autocomplete="off" oninput="searchMenu()">
-                        <button id="kbToggle" class="kb-toggle-btn-new" onclick="toggleKeyboard()">123</button>
-                    </div>
-                </div>
+            <div class="footer-btns">
+                <button class="delete-table-btn" onclick="removeTable(currentTable)">Tisch löschen</button>
+                <button class="clear-btn" onclick="clearTable()">Tisch leeren</button>
+                <button class="back-btn" onclick="backToTables()">Zurück</button>
             </div>
         </div>
     </div>

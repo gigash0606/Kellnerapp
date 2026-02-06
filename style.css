@@ -43,24 +43,18 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     background: var(--bg);
     color: var(--text);
+    /* Apply scaling to the root font size using rem-friendly base */
     font-size: calc(16px * var(--font-scale));
+    /* Prevents the rubber-band bounce effect on iOS */
     display: flex;
     flex-direction: column;
-    /* Use dynamic viewport height (svh) for better iOS support */
-    height: 100svh;
+    height: 100dvh;
     min-height: -webkit-fill-available;
     width: 100vw;
+    /* Block all gestures on the background to prevent zoom */
     touch-action: none;
+    /* Prevent iOS from auto-scaling text when the keyboard or zoom is triggered */
     -webkit-text-size-adjust: 100%;
-    /* Ensure inertia scrolling is enabled for any sub-overflows */
-    -webkit-overflow-scrolling: touch;
-}
-
-button:active,
-.card:active {
-    transform: scale(0.96);
-    transition: transform 0.1s cubic-bezier(0, 0, 0.2, 1);
-    opacity: 0.9;
 }
 
 button {
@@ -118,22 +112,13 @@ header {
     flex: 1;
     overflow-y: auto;
     width: 100%;
-    padding: 20px;
+    /* 180px bottom padding plus safe area for iPhone home indicator */
+    padding: 20px 20px calc(180px + env(safe-area-inset-bottom));
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
     /* ONLY allow vertical panning. This is the magic fix for double-tap zoom. */
     touch-action: pan-y;
 }
-
-body.order-mode .container {
-    padding: 0;
-    overflow: hidden;
-}
-
-body.order-mode {
-    background: #f8f9fa;
-}
-
 
 /* Grid Layout: 3 columns base, doubled gaps */
 .grid {
@@ -226,243 +211,242 @@ body.order-mode {
 
 /* Order Interface Styles */
 #orderInterface {
-    background: #f8f9fa;
-    height: calc(100dvh - 110px - env(safe-area-inset-top));
-    display: flex;
-    flex-direction: column;
-    margin: 0;
-    padding: 0;
-    border-radius: 0;
-    box-shadow: none;
-    overflow: hidden;
-}
-
-.order-interface-content {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    padding: 15px;
-    gap: 15px;
-}
-
-.order-header-main {
-    flex: 1;
     background: white;
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    box-shadow: var(--shadow-sm);
-    animation: fadeIn 0.4s ease-out;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes slideUp {
-    from {
-        transform: translateY(20px);
-        opacity: 0;
-    }
-
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-@keyframes popIn {
-    0% {
-        transform: scale(0.95);
-        opacity: 0;
-    }
-
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-.order-list {
-    flex: 1;
-    overflow-y: auto;
-    padding: 10px 20px;
-}
-
-
-.action-buttons {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-}
-
-.action-btn {
-    height: 100px;
-    border-radius: 12px;
-    border: none;
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: white;
-    box-shadow: var(--shadow-sm);
-}
-
-.close-btn {
-    background: #8ed1c5;
-    /* Mint green from image */
-    color: #0b6a5d;
-}
-
-.back-btn-new {
-    background: #0d6e61;
-    color: white;
-}
-
-.delete-btn-new {
-    background: #f87171;
-    color: white;
-}
-
-.results {
-    background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
-    border-radius: 24px 24px 0 0;
-    max-height: 55vh;
-    overflow-y: auto;
-    box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.15);
-    position: absolute;
-    bottom: 245px;
-    left: 8px;
-    right: 8px;
-    z-index: 1000;
-    border: 1px solid rgba(226, 232, 240, 0.8);
-    border-bottom: none;
-    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.result-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 35px 25px;
-    border-bottom: 1px solid rgba(226, 232, 240, 0.5);
-    transition: background 0.2s;
-}
-
-.result-item:nth-child(odd) {
-    background: #ffffff;
-}
-
-.result-item:nth-child(even) {
-    background: #f1f5f9;
-}
-
-
-
-.result-item:active {
-    background: rgba(var(--primary-rgb, 26, 146, 130), 0.1);
-}
-
-
-.result-item:last-child {
-    border-bottom: none;
-}
-
-
-.results:empty {
-    display: none;
-}
-
-.search-section {
-    margin-top: auto;
+    border-radius: var(--border-radius);
+    padding: 20px;
+    margin-top: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .search-container {
     position: relative;
-    display: flex;
-    align-items: center;
-    background: white;
-    border-radius: 12px;
-    padding: 5px 15px;
-    border: 2px solid #dee2e6;
-    box-shadow: var(--shadow-sm);
-}
-
-.search-icons {
-    display: flex;
-    gap: 10px;
-    margin-right: 15px;
-    font-size: 1.8rem;
-    color: #adb5bd;
+    width: 100%;
+    margin-bottom: 20px;
 }
 
 .search-box {
-    flex: 1;
-    border: none !important;
-    padding: 25px 0 !important;
-    font-size: 2.2rem !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-}
-
-.kb-toggle-btn-new {
-    background: #d0d7de;
-    border: none;
-    border-radius: 8px;
-    padding: 15px 25px;
-    font-size: 1.8rem;
-    font-weight: 800;
-    color: #495057;
-    margin-left: 10px;
-}
-
-.order-row {
-    padding: 20px 0;
-    border-bottom: 1px solid #f1f3f5;
-    animation: popIn 0.3s ease-out;
-    transition: all 0.3s ease-out;
-}
-
-.order-row.removing {
-    animation: slideOut 0.3s ease-in forwards;
-    pointer-events: none;
-}
-
-@keyframes slideOut {
-    from {
-        transform: translateX(0);
-        opacity: 1;
-    }
-
-    to {
-        transform: translateX(50px);
-        opacity: 0;
-    }
-}
-
-.item-name {
+    width: 100%;
+    padding: 30px;
+    padding-right: 120px;
+    /* Space for the toggle button */
     font-size: 2.2rem;
+    border: 4px solid #e0e0e0;
+    border-radius: 20px;
+    outline: none;
+    box-shadow: var(--shadow-sm);
+    background: #fdfdfd;
 }
 
-.item-controls {
+.kb-toggle-btn {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100px;
+    height: 100px;
+    background: #f0f2f5;
+    border-radius: 20px;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 10;
+    border: 3px solid #ddd;
+    box-shadow: 0 4px 0 #ddd;
+}
+
+.kb-toggle-btn:active {
+    transform: translateY(-40%);
+    /* Slight upward shift on click for tactile feel */
+    box-shadow: 0 2px 0 #ddd;
+}
+
+.kb-toggle-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: #0b6a5d;
+    box-shadow: 0 4px 0 #0b6a5d;
+}
+
+.results {
+    border: 2px solid #eee;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.result-item {
+    padding: 30px 40px;
+    border-bottom: 2px solid #f5f5f5;
+    cursor: pointer;
+    font-size: 2.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.1s ease;
+}
+
+.result-item:active {
+    background: #e8f4f2;
+    transform: scale(0.98);
+}
+
+.order-list {
     margin-top: 15px;
 }
 
+.order-row {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 30px 0;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.item-name {
+    font-weight: 600;
+    font-size: 2.2rem;
+    line-height: 1.2;
+}
+
+.item-comment {
+    font-size: 1.8rem;
+    color: var(--primary);
+    font-weight: 600;
+    background: #f0f9f8;
+    padding: 10px 20px;
+    border-radius: 12px;
+    display: inline-block;
+    width: fit-content;
+    margin-top: 5px;
+}
+
+.item-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    width: 100%;
+}
+
 .qty-group {
+    display: grid;
+    grid-template-columns: 100px 80px 100px;
+    align-items: center;
+    gap: 15px;
     background: #f8f9fa;
-    border: 1px solid #dee2e6;
+    padding: 5px;
+    border-radius: 30px;
+    width: fit-content;
 }
 
 .qty-btn {
-    background: white;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: none;
+    background: #f0f2f5;
+    color: var(--text);
+    font-size: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
 }
 
+.qty-btn:active {
+    background: #e4e6eb;
+    transform: scale(0.9);
+}
+
+.qty-val {
+    font-size: 2.8rem;
+    font-weight: 700;
+    min-width: 80px;
+    text-align: center;
+}
+
+.comment-btn {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 2px solid #e0e0e0;
+    background: white;
+    font-size: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.comment-btn:active {
+    background: #f0f2f5;
+    transform: scale(0.95);
+}
+
+.del-btn {
+    background: #fff5f5;
+    color: var(--danger);
+    border: none;
+    padding: 0 35px;
+    height: 100px;
+    border-radius: 50%;
+    font-size: 3rem;
+    font-weight: bold;
+}
+
+.footer-btns {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.footer-btns button {
+    width: 100%;
+    height: 150px;
+    padding: 20px;
+    border-radius: 28px;
+    border: none;
+    font-weight: 700;
+    font-size: 2.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+}
+
+.footer-btns button:active {
+    transform: scale(0.95);
+}
+
+.back-btn {
+    background: #f1f3f5 !important;
+    color: #495057 !important;
+}
+
+.clear-btn {
+    background: #fff5f5 !important;
+    color: var(--danger) !important;
+}
+
+.delete-table-btn {
+    background: var(--danger) !important;
+    color: white !important;
+}
 
 /* Custom Modal Styling */
 .modal-overlay {
