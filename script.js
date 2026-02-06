@@ -41,29 +41,48 @@ document.addEventListener('DOMContentLoaded', () => {
     // Focus logic: Rely on manual tapping for search focus to prevent accidental keyboard popups during scroll.
     // Keyboard / VisualViewport Anchor Logic
     if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', () => {
+        const updateViewport = () => {
             const h = window.visualViewport.height;
+            const offset = window.visualViewport.offsetTop;
+
             // Set a CSS variable for the visible height
             document.documentElement.style.setProperty('--vh', `${h}px`);
 
-            // Force the app and header to stay at top=0
-            window.scrollTo(0, 0);
-            document.body.scrollTop = 0;
+            // Force the app height to match visual viewport
+            document.body.style.height = `${h}px`;
 
-            // If focused on search, ensure header is locked
-            if (document.activeElement && document.activeElement.id === 'numSearch') {
-                document.getElementById('headerTitle').style.top = '0';
+            if (offset > 0) {
+                // On iOS, the viewport can be scrolled/offset when keyboard is up
+                window.scrollTo(0, offset);
+                // Keep header at the top of visual viewport
+                const header = document.getElementById('headerTitle');
+                if (header) header.style.top = `${offset}px`;
+            } else {
+                const header = document.getElementById('headerTitle');
+                if (header) header.style.top = '0';
+                window.scrollTo(0, 0);
             }
-        });
+        };
+
+        window.visualViewport.addEventListener('resize', updateViewport);
+        window.visualViewport.addEventListener('scroll', updateViewport);
+        updateViewport();
     }
 
     const searchInput = document.getElementById('numSearch');
     if (searchInput) {
         searchInput.addEventListener('focus', () => {
+            // First scroll to top to reset any weirdness
+            window.scrollTo(0, 0);
+            document.body.scrollTop = 0;
+
+            // Allow time for keyboard to emerge then ensure visibility
             setTimeout(() => {
-                window.scrollTo(0, 0);
-                document.body.scrollTop = 0;
-            }, 50);
+                if (window.visualViewport) {
+                    window.scrollTo(0, window.visualViewport.offsetTop);
+                }
+                searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
         });
     }
 });
