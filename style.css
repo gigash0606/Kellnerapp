@@ -18,13 +18,13 @@
 /* Base styles and mobile optimization */
 * {
     box-sizing: border-box;
-    /* Disables double-tap zoom completely while allowing scrolling and pinch */
+    /* touch-action: manipulation specifically tells the browser to allow 
+       panning and pinch-zoom but DISABLE double-tap to zoom. */
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
     -webkit-user-select: none;
     -webkit-touch-callout: none;
-    /* Disables the long-press menu */
 }
 
 html,

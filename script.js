@@ -18,20 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Double-tap zoom is already handled by touch-action: manipulation in CSS.
     // Removed JS-based preventDefault on touchend as it can break scrolling momentum.
 
-    // Global click handler to maintain focus in table menu
-    document.addEventListener('click', (e) => {
-        if (currentTable) {
-            // Improved focus logic: only refocus if tapping the background area, 
-            // not when interacting with order items or list results.
-            if (!e.target.closest('button, input, .modal, .card, .order-row, .result-item, .qty-group')) {
-                const input = document.getElementById('numSearch');
-                // Only refocus if not already focused to avoid keyboard flickering
-                if (input && document.activeElement !== input) {
-                    input.focus();
-                }
-            }
-        }
-    });
+    // Focus logic: Rely on manual tapping for search focus to prevent accidental keyboard popups during scroll.
+    // document.addEventListener('click', (e) => { ... }); // Removed to honor request "tapping behind... do nothing"
 });
 
 
