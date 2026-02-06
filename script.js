@@ -39,48 +39,56 @@ document.addEventListener('DOMContentLoaded', () => {
     // This JS layer specifically catches what the browser ignores in "standalone" mode.
 
     // Focus logic: Rely on manual tapping for search focus to prevent accidental keyboard popups during scroll.
-    // Keyboard / VisualViewport Anchor Logic
+    // Keyboard / VisualViewport Anchor Logic (Optimized for Standalone PWA)
     if (window.visualViewport) {
+        let ticking = false;
         const updateViewport = () => {
-            const h = window.visualViewport.height;
-            const offset = window.visualViewport.offsetTop;
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    const v = window.visualViewport;
+                    const h = v.height;
+                    const offset = v.offsetTop;
 
-            // Set a CSS variable for the visible height
-            document.documentElement.style.setProperty('--vh', `${h}px`);
+                    // Update CSS variable for layout height
+                    document.documentElement.style.setProperty('--vh', `${h}px`);
 
-            // Force the app height to match visual viewport
-            document.body.style.height = `${h}px`;
+                    // In Standalone mode, we want the body to exactly match the visible area
+                    document.body.style.height = `${h}px`;
 
-            if (offset > 0) {
-                // On iOS, the viewport can be scrolled/offset when keyboard is up
-                window.scrollTo(0, offset);
-                // Keep header at the top of visual viewport
-                const header = document.getElementById('headerTitle');
-                if (header) header.style.top = `${offset}px`;
-            } else {
-                const header = document.getElementById('headerTitle');
-                if (header) header.style.top = '0';
-                window.scrollTo(0, 0);
+                    const header = document.getElementById('headerTitle');
+                    if (offset > 0) {
+                        // Keyboard is likely visible
+                        // On iOS Standalone, scrolling the window is required to follow the visual viewport
+                        window.scrollTo(0, offset);
+                        if (header) {
+                            header.style.transform = `translateY(${offset}px)`;
+                        }
+                    } else {
+                        // Keyboard is hidden
+                        if (header) {
+                            header.style.transform = `translateY(0)`;
+                        }
+                        if (!document.activeElement || (document.activeElement.tagName !== 'INPUT')) {
+                            window.scrollTo(0, 0);
+                        }
+                    }
+                    ticking = false;
+                });
+                ticking = true;
             }
         };
 
         window.visualViewport.addEventListener('resize', updateViewport);
         window.visualViewport.addEventListener('scroll', updateViewport);
+        // Passive: true where possible, but here we just want to track
         updateViewport();
     }
 
     const searchInput = document.getElementById('numSearch');
     if (searchInput) {
         searchInput.addEventListener('focus', () => {
-            // First scroll to top to reset any weirdness
-            window.scrollTo(0, 0);
-            document.body.scrollTop = 0;
-
-            // Allow time for keyboard to emerge then ensure visibility
+            // Standalone mode benefit: we can be more aggressive with scrollIntoView
             setTimeout(() => {
-                if (window.visualViewport) {
-                    window.scrollTo(0, window.visualViewport.offsetTop);
-                }
                 searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 300);
         });
@@ -178,7 +186,8 @@ function selectTable(num) {
     currentTable = num;
     localStorage.setItem('waiterCurrentTable', num);
     document.getElementById('tableGridContainer').style.display = 'none';
-    document.getElementById('orderInterface').style.display = 'flex'; // Changed to flex for new layout
+    const orderIface = document.getElementById('orderInterface');
+    orderIface.style.display = 'flex';
 
     // Update Header
     document.getElementById('backToTablesBtn').style.display = 'flex';

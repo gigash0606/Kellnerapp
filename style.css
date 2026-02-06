@@ -40,6 +40,7 @@ body {
     height: var(--vh, 100dvh);
     min-height: -webkit-fill-available;
     width: 100%;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
@@ -55,12 +56,14 @@ header {
     justify-content: space-between;
     padding-left: 20px;
     padding-right: 20px;
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;
     z-index: 2000;
     flex-shrink: 0;
+    will-change: transform;
+    transition: transform 0.1s ease-out;
 }
 
 .header-center {
@@ -176,10 +179,9 @@ header {
 #orderInterface {
     display: flex;
     flex-direction: column;
-    /* Fill remaining height below header */
-    height: calc(100% - (65px + env(safe-area-inset-top)));
-    margin-top: calc(65px + env(safe-area-inset-top));
-    padding: 0;
+    height: 100%;
+    margin-top: 0;
+    padding-top: calc(65px + env(safe-area-inset-top));
     background: var(--bg);
     overflow: hidden;
     width: 100%;
