@@ -179,13 +179,11 @@ function selectTable(num) {
 
     renderOrder();
 
-    // Focus search box after a short delay
-    setTimeout(() => {
-        const input = document.getElementById('numSearch');
-        if (input) {
-            input.focus({ preventScroll: true });
-        }
-    }, 100);
+    // Focus search box immediately
+    const input = document.getElementById('numSearch');
+    if (input) {
+        input.focus({ preventScroll: true });
+    }
 }
 
 
@@ -449,19 +447,14 @@ function toggleKeyboard() {
     }
 
     input.blur();
-    setTimeout(() => {
-        input.focus({ preventScroll: true });
-    }, 50);
+    input.focus({ preventScroll: true });
 }
 
 
 function addToOrder(item) {
     if (!allOrders[currentTable]) allOrders[currentTable] = [];
 
-    // Vibrate for feedback (haptic)
-    if (navigator.vibrate) {
-        navigator.vibrate(15); // Short subtle pulse
-    }
+
 
     // Only stack if there is no comment
     const existingEntry = allOrders[currentTable].find(i => i.id === item.id && !i.comment);
@@ -480,13 +473,11 @@ function addToOrder(item) {
     document.getElementById('searchResults').innerHTML = "";
     document.getElementById('searchResults').classList.remove('active');
 
-    // Auto-scroll to bottom of order list
-    setTimeout(() => {
-        const list = document.getElementById('activeOrder');
-        if (list) {
-            list.scrollTop = list.scrollHeight;
-        }
-    }, 50);
+    // Auto-scroll to bottom of order list immediately
+    const list = document.getElementById('activeOrder');
+    if (list) {
+        list.scrollTop = list.scrollHeight;
+    }
 }
 
 function updateQuantity(uid, delta) {
@@ -706,12 +697,10 @@ function showModal(title, content, buttons, isHtml = false) {
     // Auto-focus input if present and handle 'Enter' key
     const input = modal.querySelector('input');
     if (input) {
-        setTimeout(() => {
-            input.focus({ preventScroll: true });
-            input.select();
-            // For iOS to definitely show keyboard, a click can help
-            input.click();
-        }, 50);
+        input.focus({ preventScroll: true });
+        input.select();
+        // For iOS to definitely show keyboard, a click can help
+        input.click();
         input.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 const primaryBtn = buttons.find(b => b.primary);
