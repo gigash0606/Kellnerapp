@@ -435,33 +435,28 @@ function searchMenu() {
 function toggleKeyboard() {
     const input = document.getElementById('numSearch');
     const btn = document.getElementById('kbToggle');
-    const customKb = document.getElementById('customKeyboard');
 
     // Check if currently in custom keyboard mode (readonly)
     if (input.readOnly) {
-        // Switch to native keyboard mode
+        // Switch to native keyboard mode - instant
+        hideCustomKeyboard();
+
         input.readOnly = false;
         input.inputMode = 'text';
         btn.style.background = 'var(--primary)';
         btn.style.color = 'white';
-        customKb.style.display = 'none';
-        activeKeyboardInput = null;
 
         input.blur();
-        setTimeout(() => {
-            input.focus({ preventScroll: true });
-        }, 50);
+        input.focus({ preventScroll: true });
     } else {
-        // Switch back to custom keyboard mode
+        // Switch back to custom keyboard mode - instant
         input.readOnly = true;
         input.inputMode = 'none';
         btn.style.background = '#9ca3af';
         btn.style.color = 'white';
 
         input.blur();
-        setTimeout(() => {
-            showCustomKeyboard(input);
-        }, 50);
+        showCustomKeyboard(input);
     }
 }
 
@@ -471,43 +466,26 @@ function showCustomKeyboard(input) {
     const customKb = document.getElementById('customKeyboard');
     const rootContainer = document.getElementById('rootContainer');
 
-    // Show keyboard first (off-screen)
+    // Show keyboard instantly
     customKb.style.display = 'block';
-
-    // Get keyboard height after it's rendered
     const keyboardHeight = customKb.offsetHeight;
 
-    // Resize root container to accommodate keyboard (like iOS does)
+    // Resize root container instantly
     rootContainer.style.paddingBottom = keyboardHeight + 'px';
-
-    // Add visible class for slide-up animation after layout adjustment
-    setTimeout(() => {
-        customKb.classList.add('visible');
-    }, 10);
 
     // Prevent native keyboard
     input.readOnly = true;
     input.inputMode = 'none';
-
-    // Focus the input (but it won't show native keyboard due to readonly)
-    setTimeout(() => {
-        input.focus({ preventScroll: true });
-    }, 100);
+    input.focus({ preventScroll: true });
 }
 
 function hideCustomKeyboard() {
     const customKb = document.getElementById('customKeyboard');
     const rootContainer = document.getElementById('rootContainer');
 
-    // Remove visible class for slide-down animation
-    customKb.classList.remove('visible');
-
-    // After animation completes, hide and reset
-    setTimeout(() => {
-        customKb.style.display = 'none';
-        rootContainer.style.paddingBottom = '0';
-    }, 300); // Match CSS transition duration
-
+    // Hide instantly
+    customKb.style.display = 'none';
+    rootContainer.style.paddingBottom = '0';
     activeKeyboardInput = null;
 }
 
@@ -737,7 +715,7 @@ function customPrompt(title, message, callback) {
             }
         }
     ], true, () => {
-        // onShow callback - show custom keyboard for this input
+        // onShow callback - show custom keyboard instantly
         const input = document.getElementById(inputId);
         if (input) {
             showCustomKeyboard(input);
@@ -799,9 +777,7 @@ function showModal(title, content, buttons, isHtml = false, onShow = null) {
     // Auto-focus input if present and handle 'Enter' key
     const input = modal.querySelector('input');
     if (input) {
-        setTimeout(() => {
-            input.focus({ preventScroll: true });
-        }, 100);
+        input.focus({ preventScroll: true });
         input.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 const primaryBtn = buttons.find(b => b.primary);
@@ -813,9 +789,9 @@ function showModal(title, content, buttons, isHtml = false, onShow = null) {
         });
     }
 
-    // Call onShow callback if provided
+    // Call onShow callback instantly if provided
     if (onShow) {
-        setTimeout(() => onShow(), 150);
+        onShow();
     }
 }
 
