@@ -536,12 +536,18 @@ header {
 }
 
 
-.top-search {
-    position: static;
+.top-search,
+.bottom-search {
+    position: relative;
     padding: 0;
     background: #e9ecef;
-    border-bottom: 1px solid #eee;
+    border-top: 1px solid #eee;
     z-index: 1001;
+}
+
+.bottom-search {
+    border-top: 1px solid #ddd;
+    border-bottom: none;
 }
 
 .search-bar-wrapper {
@@ -580,6 +586,43 @@ header {
     border-radius: 0;
     box-shadow: none;
     /* Remove iOS input shadow */
+}
+
+/* Custom Numpad Styling */
+.numpad-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    background: #e9ecef;
+    border-top: 1px solid #ddd;
+    gap: 1px;
+    user-select: none;
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.num-btn {
+    height: 60px;
+    background: white;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+
+.num-btn:active {
+    background: #f0f0f0;
+}
+
+.num-btn.delete {
+    color: var(--danger);
+}
+
+.num-btn.clear {
+    color: #f39c12;
 }
 
 .kb-switch-btn {
@@ -622,20 +665,27 @@ header {
     transform: scale(0.9);
 }
 
-/* Results Dropdown (now at top) */
+/* Results Dropdown (now at bottom, growing UP) */
 #searchResults {
     position: absolute;
-    top: 52px;
+    bottom: 108px;
+    /* Height of footer (56px) + Search bar (52px) */
     left: 0;
     right: 0;
-    bottom: 0;
+    max-height: calc(100dvh - 120px - env(safe-area-inset-top));
+    /* Ensure it doesn't overlap header */
     background: #fdfdfd;
     overflow-y: auto;
-    z-index: 2000;
+    z-index: 1500;
     display: none !important;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
-    transform-origin: top;
+    transform-origin: bottom;
+    box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.15);
+}
+
+#orderInterface.numpad-active #searchResults {
+    bottom: calc(108px + 240px + env(safe-area-inset-bottom));
 }
 
 #searchResults.active {

@@ -53,6 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // LOCK RUBBER-BAND SCROLL ON SEARCH FOCUS (iOS Safari specific)
     const searchInput = document.getElementById('numSearch');
     if (searchInput) {
+        // Initialize with inputMode none to support custom numpad first
+        searchInput.inputMode = 'none';
+
         const preventRubberBand = (e) => {
             const results = document.getElementById('searchResults');
             const activeOrder = document.getElementById('activeOrder');
@@ -68,11 +71,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
         searchInput.addEventListener('focus', () => {
             document.addEventListener('touchmove', preventRubberBand, { passive: false });
+            // Show custom numpad if nothing else is active
+            const numpad = document.getElementById('numpadContainer');
+            const orderIface = document.getElementById('orderInterface');
+            if (searchInput.inputMode === 'none' && numpad.style.display === 'none') {
+                numpad.style.display = 'grid';
+                orderIface.classList.add('numpad-active');
+                document.getElementById('kbToggle').classList.add('active-mode');
+            }
         });
 
         searchInput.addEventListener('blur', () => {
             document.removeEventListener('touchmove', preventRubberBand);
         });
+
+        // Prevent numpad buttons from blurring the input
+        const handleNumPress = (e) => {
+            const btn = e.target.closest('.num-btn');
+            if (btn) {
+                e.preventDefault();
+                numInput(btn.getAttribute('data-key'));
+            }
+        };
+
+        document.addEventListener('touchstart', handleNumPress, { passive: false });
+        document.addEventListener('mousedown', handleNumPress);
     }
 });
 
@@ -216,7 +239,12 @@ function backToTables() {
 
     const input = document.getElementById('numSearch');
     input.value = "";
+    input.inputMode = 'none';
     document.getElementById('searchResults').innerHTML = "";
+    document.getElementById('searchResults').classList.remove('active');
+    document.getElementById('numpadContainer').style.display = 'none';
+    document.getElementById('orderInterface').classList.remove('numpad-active');
+    document.getElementById('kbToggle').classList.remove('active-mode');
     generateTables();
 }
 
@@ -451,21 +479,47 @@ function searchMenu() {
 function toggleKeyboard() {
     const input = document.getElementById('numSearch');
     const btn = document.getElementById('kbToggle');
+    const numpad = document.getElementById('numpadContainer');
 
-    // If already focused, clicking the keyboard icon should hide/blur
-    if (document.activeElement === input) {
-        input.blur();
-        return;
-    }
+    // Cycle through modes: Closed -> Custom Numpad -> Native Keyboard -> Closed
 
-    if (input.inputMode === 'decimal') {
-        input.inputMode = 'text';
+    const isNumpadVisible = numpad.style.display !== 'none';
+    const isNativeKeyboard = input.inputMode !== 'none';
+    const orderIface = document.getElementById('orderInterface');
+
+    if (!isNumpadVisible && input.inputMode === 'none') {
+        // Show Custom Numpad
+        numpad.style.display = 'grid';
+        orderIface.classList.add('numpad-active');
         btn.classList.add('active-mode');
-    } else {
+        input.focus({ preventScroll: true });
+    } else if (isNumpadVisible && input.inputMode === 'none') {
+        // Switch to Native Keyboard
+        numpad.style.display = 'none';
+        orderIface.classList.remove('numpad-active');
         input.inputMode = 'decimal';
+        btn.classList.add('active-mode');
+        input.focus({ preventScroll: true });
+    } else {
+        // Close everything
+        numpad.style.display = 'none';
+        orderIface.classList.remove('numpad-active');
+        input.inputMode = 'none';
         btn.classList.remove('active-mode');
+        input.blur();
     }
+}
 
+function numInput(key) {
+    const input = document.getElementById('numSearch');
+    if (key === 'back') {
+        input.value = input.value.slice(0, -1);
+    } else if (key === 'clear') {
+        input.value = "";
+    } else {
+        input.value += key;
+    }
+    searchMenu();
     input.focus({ preventScroll: true });
 }
 
