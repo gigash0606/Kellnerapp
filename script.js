@@ -29,39 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
     });
 
-    // VISUAL VIEWPORT HANDLER - Fixes keyboard "pushing" the whole screen up
-    const handleViewport = () => {
-        const root = document.getElementById('rootContainer');
-        if (root && window.visualViewport) {
-            const viewport = window.visualViewport;
-            const height = viewport.height;
-
-            // Set height and update CSS variable
-            root.style.height = `${height}px`;
-            document.documentElement.style.setProperty('--v-height', `${height}px`);
-
-            // Immediately force the container to the top of the visible area
-            root.style.top = `${viewport.offsetTop}px`;
-
-            // Aggressive scroll reset to prevent the browser from centering the input
-            if (window.scrollY !== 0) {
-                window.scrollTo(0, 0);
-            }
-        }
-    };
-
-    if (window.visualViewport) {
-        window.visualViewport.onresize = handleViewport;
-        window.visualViewport.onscroll = handleViewport;
-        // Faster response to focus events
-        document.addEventListener('focusin', () => {
-            // Tiny delay allows viewport to start updating
-            requestAnimationFrame(handleViewport);
-            setTimeout(handleViewport, 50);
-        });
-    }
-    handleViewport();
-
 });
 
 
