@@ -86,24 +86,51 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Prevent custom keyboard buttons from blurring the input
+        let backspaceInterval = null;
+
         const handleKbPress = (e) => {
             const btn = e.target.closest('.num-btn, .kb-key');
             if (btn) {
-                e.preventDefault();
-                const key = btn.getAttribute('data-key');
-                if (key) {
-                    // Decide which input to target
-                    const modalInput = document.getElementById('modalInput');
-                    const target = (modalInput && document.body.contains(modalInput)) ? modalInput : searchInput;
-                    numInput(key, target);
-                } else {
-                    // Handle special buttons that don't use 'data-key'
-                    if (btn.classList.contains('swap-btn') || btn.classList.contains('symbol-btn')) {
-                        toggleKeyboard();
-                    } else if (btn.classList.contains('shift-btn')) {
-                        toggleShift();
-                    } else if (btn.classList.contains('return-btn')) {
-                        hideKeyboard();
+                if (e.type === 'touchstart' || e.type === 'mousedown') {
+                    e.preventDefault();
+                    const key = btn.getAttribute('data-key');
+
+                    if (key) {
+                        const modalInput = document.getElementById('modalInput');
+                        const target = (modalInput && document.body.contains(modalInput)) ? modalInput : searchInput;
+
+                        numInput(key, target);
+
+                        // Repeat delete logic
+                        if (key === 'back') {
+                            if (backspaceInterval) {
+                                if (backspaceInterval.type === 'timeout') clearTimeout(backspaceInterval.id);
+                                if (backspaceInterval.type === 'interval') clearInterval(backspaceInterval.id);
+                            }
+                            // Initial delay before repeating
+                            const timeoutId = setTimeout(() => {
+                                const intervalId = setInterval(() => {
+                                    numInput('back', target);
+                                }, 60); // Faster repeat
+                                backspaceInterval = { id: intervalId, type: 'interval' };
+                            }, 500); // System-like delay
+                            backspaceInterval = { id: timeoutId, type: 'timeout' };
+                        }
+                    } else {
+                        // Handle special buttons that don't use 'data-key'
+                        if (btn.classList.contains('swap-btn') || btn.classList.contains('symbol-btn')) {
+                            toggleKeyboard();
+                        } else if (btn.classList.contains('shift-btn')) {
+                            toggleShift();
+                        } else if (btn.classList.contains('return-btn')) {
+                            hideKeyboard();
+                        }
+                    }
+                } else if (e.type === 'touchend' || e.type === 'mouseup' || e.type === 'mouseleave') {
+                    if (backspaceInterval) {
+                        if (backspaceInterval.type === 'timeout') clearTimeout(backspaceInterval.id);
+                        if (backspaceInterval.type === 'interval') clearInterval(backspaceInterval.id);
+                        backspaceInterval = null;
                     }
                 }
             }
@@ -111,6 +138,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.addEventListener('touchstart', handleKbPress, { passive: false });
         document.addEventListener('mousedown', handleKbPress);
+        document.addEventListener('touchend', handleKbPress);
+        document.addEventListener('mouseup', handleKbPress);
+        document.addEventListener('mouseleave', handleKbPress);
     }
 });
 
@@ -508,6 +538,10 @@ function toggleKeyboard() {
         fullKb.style.display = 'flex';
         orderIface.classList.remove('numpad-active');
         orderIface.classList.add('keyboard-active');
+
+        // Reset to first-letter-caps mode
+        isShifted = false; // Set to false first to ensure toggleShift sets it to true correctly
+        toggleShift(true);
     } else {
         // Full Keyboard -> Numpad
         fullKb.style.display = 'none';
@@ -527,8 +561,12 @@ function hideKeyboard() {
 
 let isShifted = true; // Start with uppercase
 
-function toggleShift() {
-    isShifted = !isShifted;
+function toggleShift(forceState = null) {
+    if (forceState !== null) {
+        isShifted = forceState;
+    } else {
+        isShifted = !isShifted;
+    }
     const btn = document.getElementById('kbShiftBtn');
     const keys = document.querySelectorAll('.kb-key:not(.shift-btn):not(.backspace-btn):not(.symbol-btn):not(.space-btn):not(.return-btn)');
 
@@ -540,7 +578,7 @@ function toggleShift() {
 
     keys.forEach(k => {
         const val = k.getAttribute('data-key');
-        if (val.length === 1 && /[a-zA-Z]/.test(val)) {
+        if (val && val.length === 1 && /[a-zA-Z]/.test(val)) {
             const newVal = isShifted ? val.toUpperCase() : val.toLowerCase();
             k.innerText = newVal;
             k.setAttribute('data-key', newVal);
@@ -566,6 +604,10 @@ function numInput(key, targetInput = null) {
         }
     } else {
         input.value += key;
+        // Sentence case: if shifted and typed a letter, unshift
+        if (isShifted && key.length === 1 && /[a-zA-Z]/.test(key)) {
+            toggleShift(false);
+        }
     }
 
     // Trigger search if it's the main search box
