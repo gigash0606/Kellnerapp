@@ -29,26 +29,18 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
     });
 
-    // Keyboard / VisualViewport Anchor Logic (Rock Solid Fix)
+    // Keyboard / VisualViewport Anchor Logic (Ultimate Smooth Fix)
     if (window.visualViewport) {
         const root = document.getElementById('rootContainer');
         const updateViewport = () => {
             const v = window.visualViewport;
 
-            // Use the visual viewport height for the container
-            // This pulls the footer up above the keyboard on all platforms
+            // Update height to bring footer up. 
+            // We NO LONGER use translateY because that's what causes the "sliding" jump.
             root.style.height = `${v.height}px`;
 
-            // On iOS, we need to translate the root down by offsetTop
-            // to keep the header at the top of the visible area if the browser panned.
-            // On Android with interactive-widget=resizes-content, offsetTop is usually 0.
-            if (v.offsetTop > 0.5) {
-                root.style.transform = `translateY(${Math.round(v.offsetTop)}px)`;
-            } else {
-                root.style.transform = '';
-            }
-
-            // Kill any layout viewport scrolling that causes the "jump"
+            // Forcing scroll to 0 prevents the browser from trying to "pan" 
+            // which usually shifts fixed elements like the header.
             if (window.scrollY !== 0) {
                 window.scrollTo(0, 0);
             }
@@ -63,7 +55,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Prevent layout scrolling on focus
         document.addEventListener('focusin', (e) => {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-                setTimeout(() => window.scrollTo(0, 0), 0);
+                window.scrollTo(0, 0);
+                // Also trigger a layout update
+                updateViewport();
             }
         }, { passive: true });
     }
@@ -174,7 +168,7 @@ function selectTable(num) {
         const input = document.getElementById('numSearch');
         if (input) {
             input.focus({ preventScroll: true });
-            window.scrollTo(0, 0);
+            // Let the visualViewport handler deal with the scroll
         }
     }, 100);
 }
@@ -440,7 +434,6 @@ function toggleKeyboard() {
     input.blur();
     setTimeout(() => {
         input.focus({ preventScroll: true });
-        window.scrollTo(0, 0);
     }, 50);
 }
 
@@ -695,7 +688,6 @@ function showModal(title, content, buttons, isHtml = false) {
     if (input) {
         setTimeout(() => {
             input.focus({ preventScroll: true });
-            window.scrollTo(0, 0);
         }, 100);
         input.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
