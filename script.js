@@ -75,6 +75,7 @@ function generateTables() {
     // "Add Table" Card
     const addCard = document.createElement('div');
     addCard.className = 'card add-table-card';
+    addCard.onclick = addTable;
     addCard.innerHTML = `
         <div class="card-body">
             <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:40px; height:40px;">
@@ -83,7 +84,6 @@ function generateTables() {
             </svg>
         </div>
     `;
-    addCard.onclick = addTable;
     grid.appendChild(addCard);
 
     // Existing Tables
@@ -91,13 +91,13 @@ function generateTables() {
         const hasOrder = (allOrders[num] && allOrders[num].length > 0);
         const card = document.createElement('div');
         card.className = `card table-card ${hasOrder ? 'has-order' : ''}`;
+        card.onclick = () => selectTable(num);
 
         card.innerHTML = `
             <div class="card-body">
-                <span style="font-size: 2.2rem; font-weight: 800; color: #333;">${num}</span>
+                <span class="table-num">${num}</span>
             </div>
         `;
-        card.onclick = () => selectTable(num);
         grid.appendChild(card);
     });
 }
