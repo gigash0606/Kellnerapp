@@ -50,7 +50,6 @@ body {
     flex-direction: column;
     overflow: hidden;
     background: var(--primary-gradient);
-    padding-bottom: env(safe-area-inset-bottom);
     position: relative;
 }
 

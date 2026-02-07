@@ -461,7 +461,8 @@ function addToOrder(item) {
         });
     }
     saveAndRender();
-    document.getElementById('numSearch').value = "";
+    const searchInput = document.getElementById('numSearch');
+    searchInput.value = "";
     document.getElementById('searchResults').innerHTML = "";
     document.getElementById('searchResults').classList.remove('active');
 
@@ -470,6 +471,9 @@ function addToOrder(item) {
     if (list) {
         list.scrollTop = list.scrollHeight;
     }
+
+    // Keep keyboard open
+    searchInput.focus();
 }
 
 function updateQuantity(uid, delta) {
@@ -480,6 +484,9 @@ function updateQuantity(uid, delta) {
         allOrders[currentTable] = allOrders[currentTable].filter(i => i.uid !== uid);
     }
     saveAndRender();
+
+    // Keep keyboard open
+    document.getElementById('numSearch').focus();
 }
 
 function removeFromOrder(uid) {
