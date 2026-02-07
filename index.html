@@ -56,16 +56,7 @@
         </div>
 
         <div id="orderInterface" style="display:none;">
-            <div id="activeOrder" class="order-list"></div>
-
-            <div class="table-footer-controls">
-                <div class="footer-action-btns">
-                    <button class="clear-table-btn" onclick="clearTable()">Tisch leeren</button>
-                    <button class="delete-table-btn" onclick="removeTable(currentTable)">Tisch löschen</button>
-                </div>
-            </div>
-
-            <div class="search-section bottom-search">
+            <div class="search-section top-search">
                 <div id="searchResults" class="results"></div>
                 <div class="search-bar-wrapper">
                     <div class="search-icon-side">
@@ -89,6 +80,15 @@
                             <line x1="15" y1="14" x2="15" y2="14"></line>
                         </svg>
                     </button>
+                </div>
+            </div>
+
+            <div id="activeOrder" class="order-list"></div>
+
+            <div class="table-footer-controls">
+                <div class="footer-action-btns">
+                    <button class="clear-table-btn" onclick="clearTable()">Tisch leeren</button>
+                    <button class="delete-table-btn" onclick="removeTable(currentTable)">Tisch löschen</button>
                 </div>
             </div>
         </div>
