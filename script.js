@@ -337,17 +337,26 @@ function searchMenu() {
     const val = document.getElementById('numSearch').value;
     const resultsDiv = document.getElementById('searchResults');
     resultsDiv.innerHTML = "";
-    if (!val) return;
 
+    if (!val) {
+        resultsDiv.classList.remove('active');
+        return;
+    }
+
+    resultsDiv.classList.add('active');
     const query = val.toLowerCase();
-    // For ID matching, strip leading zeros so "01" matches ID 1
-    const idQuery = query.replace(/^0+/, '');
+    const isNum = /^\d+$/.test(query);
     const currentItems = allOrders[currentTable] || [];
 
-    const matches = menu.filter(item =>
-        (idQuery !== '' && item.id.toString().startsWith(idQuery)) ||
-        item.name.toLowerCase().includes(query)
-    );
+    let matches = [];
+    if (isNum) {
+        // If it's a number, only search by ID (code)
+        const idQuery = query.replace(/^0+/, '');
+        matches = menu.filter(item => item.id.toString().startsWith(idQuery));
+    } else {
+        // Otherwise search by name
+        matches = menu.filter(item => item.name.toLowerCase().includes(query));
+    }
 
     // Sort result by ID numerically: lowest number up
     matches.sort((a, b) => a.id - b.id);
@@ -355,10 +364,8 @@ function searchMenu() {
     // AUTO-ADD RULE: If unique match and "obvious"
     if (matches.length === 1) {
         const item = matches[0];
-        // Obvious if: 
-        // 1. We typed the exact ID
-        // 2. We typed at least 3 characters of the name
-        if (idQuery === item.id.toString() || (query.length >= 3 && item.name.toLowerCase().startsWith(query))) {
+        if ((isNum && item.id.toString() === query.replace(/^0+/, '')) ||
+            (!isNum && query.length >= 3 && item.name.toLowerCase().startsWith(query))) {
             addToOrder(item);
             return;
         }
@@ -366,18 +373,13 @@ function searchMenu() {
 
     matches.forEach(item => {
         const orderItem = currentItems.find(i => i.id === item.id);
-        const qtyLabel = orderItem ? `<span style="background:var(--primary); color:white; padding:5px 15px; border-radius:20px; font-size:1.1rem; font-weight:800;">${orderItem.quantity}x</span>` : "";
-
-        // Raw ID display without padding
-        const displayId = item.id;
+        const qtyLabel = orderItem ? `<span class="qty-tag">${orderItem.quantity}x</span>` : "";
 
         const div = document.createElement('div');
         div.className = 'result-item';
         div.innerHTML = `
-            <div style="display:flex; align-items:center; gap:15px; flex:1;">
-                <span style="color:var(--primary); font-weight:900; min-width:40px; font-size:1.1rem;">${displayId}</span>
-                <span style="font-weight:800; font-size:1.1rem;">${item.name}</span>
-            </div>
+            <span class="item-id">${item.id}</span>
+            <span class="item-text">${item.name}</span>
             ${qtyLabel}
         `;
         div.onclick = () => addToOrder(item);
@@ -429,6 +431,7 @@ function addToOrder(item) {
     saveAndRender();
     document.getElementById('numSearch').value = "";
     document.getElementById('searchResults').innerHTML = "";
+    document.getElementById('searchResults').classList.remove('active');
 }
 
 function updateQuantity(uid, delta) {
@@ -442,15 +445,8 @@ function updateQuantity(uid, delta) {
 }
 
 function removeFromOrder(uid) {
-    const item = allOrders[currentTable].find(i => i.uid === uid);
-    const itemName = item ? item.name : "Artikel";
-
-    customConfirm("Entfernen", `${itemName} entfernen?`, (confirmed) => {
-        if (confirmed) {
-            allOrders[currentTable] = allOrders[currentTable].filter(i => i.uid !== uid);
-            saveAndRender();
-        }
-    });
+    allOrders[currentTable] = allOrders[currentTable].filter(i => i.uid !== uid);
+    saveAndRender();
 }
 
 function saveAndRender() {
