@@ -30,6 +30,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (window.visualViewport) {
+        // Initialize height immediately to lock it vs CSS 100dvh
+        const root = document.getElementById('rootContainer');
+        if (root) root.style.height = window.visualViewport.height + 'px';
+
         window.visualViewport.addEventListener('resize', () => {
             const root = document.getElementById('rootContainer');
             if (!root) return;
@@ -43,6 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // IF on Home Screen AND Modal is open (Create Table) -> Don't resize (Fixed Layout)
             if (isModalOpen && !isOrderScreen) {
+                // Force reset scroll to top to prevent browser from pushing the page up
+                window.scrollTo(0, 0);
                 return;
             }
 
