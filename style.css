@@ -1,5 +1,7 @@
 :root {
     --primary: #1a9282;
+    --primary-light: #73d1c4;
+    /* ~50% lighter teal */
     --primary-gradient: linear-gradient(135deg, #1a9282 0%, #0d6e61 100%);
     --header-blue: #3a9bfb;
     --accent-green: #27ae60;
@@ -31,7 +33,6 @@ body {
     height: 100%;
     /* 100dvh handles browser chrome better, but fallback to 100% for stability */
     height: 100vh;
-    height: 100dvh;
     width: 100%;
     overflow: hidden;
     overscroll-behavior: none;
@@ -44,6 +45,12 @@ body {
     /* Removing position: fixed here helps avoid the "pop" on iOS Safari */
     display: flex;
     flex-direction: column;
+    position: fixed;
+    /* Force fixed to prevent any scrolling */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 
 #rootContainer {
@@ -54,8 +61,8 @@ body {
     flex-direction: column;
     overflow: hidden;
     background: var(--bg);
-    position: fixed;
-    /* Fixed position helps prevent the background from pushing up */
+    position: absolute;
+    /* Absolute within fixed body */
     top: 0;
     left: 0;
 }
@@ -137,6 +144,9 @@ header {
     overflow-y: auto;
     padding: 15px;
     padding-bottom: calc(15px + env(safe-area-inset-bottom));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 
@@ -144,6 +154,9 @@ header {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 12px;
+    width: 100%;
+    max-width: 450px;
+    margin: 0 auto;
 }
 
 .card {
@@ -294,48 +307,45 @@ header {
 }
 
 /* Footer Controls - Optimized for iPhone/PWA */
+/* Bottom Search Bar Structure */
 .table-footer-controls {
     background: #fff;
     /* Clean white background for area */
-    /* Remove padding to allow buttons to sit flush */
-    padding: 0;
-    /* Only add safe area padding at the bottom */
-    padding-bottom: env(safe-area-inset-bottom);
     display: flex;
     flex-direction: column;
-    gap: 0;
+    /* Stack: Buttons then Search */
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
     z-index: 100;
+    /* Safe area is applied to the very last element (search bar) */
+    padding-bottom: 0;
 }
 
 .footer-action-btns {
+    width: 100%;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1px;
-    /* Minimal gap for visual separation */
     background: #e0e0e0;
-    /* Separator color */
 }
 
 .footer-action-btns button {
-    height: 56px;
-    /* Slightly taller for better touch target */
+    height: 50px;
+    /* Slightly reduced height to save space */
     border: none;
     border-radius: 0;
-    /* Remove radius for flush look */
     font-weight: 700;
-    font-size: 1.1rem;
+    font-size: 1rem;
     transition: background 0.2s;
 }
 
+
 .clear-table-btn {
-    background: #f8f9fa;
-    color: #555;
-    border-top: 1px solid #eee;
+    background: var(--primary-light);
+    color: white;
 }
 
 .delete-table-btn {
-    background: var(--primary);
+    background: var(--primary-gradient);
     color: white;
 }
 
@@ -343,35 +353,51 @@ header {
     opacity: 0.8;
 }
 
-.top-search {
+/* Ensure Qty Badge matches Clear Button */
+.qty-badge-box {
+    background: var(--primary-light);
+}
+
+/* Bottom Search Section */
+.bottom-search {
     position: relative;
     padding: 0;
+    padding-bottom: env(safe-area-inset-bottom);
+    /* Safe area here */
     background: #e9ecef;
-    border-bottom: 1px solid #eee;
+    border-top: 1px solid #ccc;
+    /* Distinct separation */
     z-index: 1001;
 }
 
 .search-bar-wrapper {
     display: flex;
     align-items: center;
-    background: transparent;
+    background: #fff;
+    /* White background for input row */
     border-radius: 0;
     padding: 0;
     gap: 0;
 }
 
-.search-icon-side {
-    width: 36px;
-    height: 36px;
+/* Keep height enforcement */
+.search-icon-side,
+.kb-switch-btn {
+    width: 52px;
+    height: 52px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #7f8c8d;
+    background: transparent;
+    border: none;
+    border-radius: 0;
 }
 
+.kb-switch-btn svg,
 .search-icon-side svg {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
 }
 
 .modern-search-box {
@@ -382,40 +408,30 @@ header {
     font-size: 1.15rem;
     outline: none;
     color: #333;
+    border-radius: 0;
     -webkit-appearance: none;
     appearance: none;
-    border-radius: 0;
 }
 
-.kb-switch-btn {
-    width: 52px;
-    height: 52px;
-    background: rgba(0, 0, 0, 0.05);
-    border: none;
-    border-radius: 0;
-    color: #7f8c8d;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.kb-switch-btn svg {
-    width: 24px;
-    height: 24px;
-}
-
-/* Results Dropdown (now at top) */
+/* Results Dropdown */
 #searchResults {
-    position: fixed;
-    top: calc(52px + env(safe-area-inset-top) + 52px);
-    /* Header (52px) + Search row (52px) */
+    position: absolute;
+    /* Absolute relative to orderInterface which is flex-item-1 */
+    top: 0;
     left: 0;
     right: 0;
-    bottom: 0;
-    background: #fdfdfd;
+    bottom: calc(103px + env(safe-area-inset-bottom));
+    /* Height of footer (~102px: 50px buttons + 52px search + safe-area) */
+    /* Wait, safe-area varies. Let's make it cover the order list area completely */
+    /* Actually simpler: just make it fill the remaining space except header? */
+    /* Let's fix it to: top of order list to bottom of order list */
+    z-index: 90;
+    /* Below footer (z-100) but above list */
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
     overflow-y: auto;
-    z-index: 1000;
     display: none !important;
+    border-bottom: 1px solid #ddd;
 }
 
 #searchResults.active {

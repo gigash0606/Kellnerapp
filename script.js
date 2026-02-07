@@ -29,12 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
     });
 
-    if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', () => {
-            const root = document.getElementById('rootContainer');
-            if (root) root.style.height = window.visualViewport.height + 'px';
-        });
-    }
+
 });
 
 
