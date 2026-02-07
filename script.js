@@ -71,13 +71,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         searchInput.addEventListener('focus', () => {
             document.addEventListener('touchmove', preventRubberBand, { passive: false });
-            // Show custom numpad if nothing else is active
+            // Show custom numpad on focus if no keyboard is currently visible
             const numpad = document.getElementById('numpadContainer');
+            const fullKb = document.getElementById('fullKeyboardContainer');
             const orderIface = document.getElementById('orderInterface');
-            if (searchInput.inputMode === 'none' && numpad.style.display === 'none') {
+            if (numpad.style.display === 'none' && fullKb.style.display === 'none') {
                 numpad.style.display = 'grid';
                 orderIface.classList.add('numpad-active');
-                document.getElementById('kbToggle').classList.add('active-mode');
             }
         });
 
@@ -85,17 +85,23 @@ document.addEventListener('DOMContentLoaded', () => {
             document.removeEventListener('touchmove', preventRubberBand);
         });
 
-        // Prevent numpad buttons from blurring the input
-        const handleNumPress = (e) => {
-            const btn = e.target.closest('.num-btn');
+        // Prevent custom keyboard buttons from blurring the input
+        const handleKbPress = (e) => {
+            const btn = e.target.closest('.num-btn, .kb-key');
             if (btn) {
                 e.preventDefault();
-                numInput(btn.getAttribute('data-key'));
+                const key = btn.getAttribute('data-key');
+                if (key) {
+                    // Decide which input to target
+                    const modalInput = document.getElementById('modalInput');
+                    const target = (modalInput && document.body.contains(modalInput)) ? modalInput : searchInput;
+                    numInput(key, target);
+                }
             }
         };
 
-        document.addEventListener('touchstart', handleNumPress, { passive: false });
-        document.addEventListener('mousedown', handleNumPress);
+        document.addEventListener('touchstart', handleKbPress, { passive: false });
+        document.addEventListener('mousedown', handleKbPress);
     }
 });
 
@@ -243,8 +249,8 @@ function backToTables() {
     document.getElementById('searchResults').innerHTML = "";
     document.getElementById('searchResults').classList.remove('active');
     document.getElementById('numpadContainer').style.display = 'none';
-    document.getElementById('orderInterface').classList.remove('numpad-active');
-    document.getElementById('kbToggle').classList.remove('active-mode');
+    document.getElementById('fullKeyboardContainer').style.display = 'none';
+    document.getElementById('orderInterface').classList.remove('numpad-active', 'keyboard-active');
     generateTables();
 }
 
@@ -426,6 +432,7 @@ function searchMenu() {
     const val = document.getElementById('numSearch').value;
     const resultsDiv = document.getElementById('searchResults');
     resultsDiv.innerHTML = "";
+    resultsDiv.scrollTop = 0;
 
     if (!val) {
         resultsDiv.classList.remove('active');
@@ -478,48 +485,84 @@ function searchMenu() {
 
 function toggleKeyboard() {
     const input = document.getElementById('numSearch');
-    const btn = document.getElementById('kbToggle');
     const numpad = document.getElementById('numpadContainer');
-
-    // Cycle through modes: Closed -> Custom Numpad -> Native Keyboard -> Closed
-
-    const isNumpadVisible = numpad.style.display !== 'none';
-    const isNativeKeyboard = input.inputMode !== 'none';
+    const fullKb = document.getElementById('fullKeyboardContainer');
     const orderIface = document.getElementById('orderInterface');
 
-    if (!isNumpadVisible && input.inputMode === 'none') {
-        // Show Custom Numpad
-        numpad.style.display = 'grid';
-        orderIface.classList.add('numpad-active');
-        btn.classList.add('active-mode');
-        input.focus({ preventScroll: true });
-    } else if (isNumpadVisible && input.inputMode === 'none') {
-        // Switch to Native Keyboard
+    input.inputMode = 'none';
+
+    const isNumpadVisible = numpad.style.display !== 'none';
+
+    if (isNumpadVisible) {
+        // Numpad -> Full Keyboard
         numpad.style.display = 'none';
+        fullKb.style.display = 'flex';
         orderIface.classList.remove('numpad-active');
-        input.inputMode = 'decimal';
-        btn.classList.add('active-mode');
-        input.focus({ preventScroll: true });
+        orderIface.classList.add('keyboard-active');
     } else {
-        // Close everything
-        numpad.style.display = 'none';
-        orderIface.classList.remove('numpad-active');
-        input.inputMode = 'none';
-        btn.classList.remove('active-mode');
-        input.blur();
+        // Full Keyboard -> Numpad
+        fullKb.style.display = 'none';
+        numpad.style.display = 'grid';
+        orderIface.classList.remove('keyboard-active');
+        orderIface.classList.add('numpad-active');
     }
+    input.focus({ preventScroll: true });
 }
 
-function numInput(key) {
-    const input = document.getElementById('numSearch');
+function hideKeyboard() {
+    document.getElementById('numpadContainer').style.display = 'none';
+    document.getElementById('fullKeyboardContainer').style.display = 'none';
+    document.getElementById('orderInterface').classList.remove('numpad-active', 'keyboard-active');
+    document.getElementById('numSearch').blur();
+}
+
+let isShifted = true; // Start with uppercase
+
+function toggleShift() {
+    isShifted = !isShifted;
+    const btn = document.getElementById('kbShiftBtn');
+    const keys = document.querySelectorAll('.kb-key:not(.shift-btn):not(.backspace-btn):not(.symbol-btn):not(.space-btn):not(.return-btn)');
+
+    if (isShifted) {
+        btn.classList.add('active-shift');
+    } else {
+        btn.classList.remove('active-shift');
+    }
+
+    keys.forEach(k => {
+        const val = k.getAttribute('data-key');
+        if (val.length === 1 && /[a-zA-Z]/.test(val)) {
+            const newVal = isShifted ? val.toUpperCase() : val.toLowerCase();
+            k.innerText = newVal;
+            k.setAttribute('data-key', newVal);
+        }
+    });
+}
+
+function numInput(key, targetInput = null) {
+    const input = targetInput || document.getElementById('numSearch');
+    if (!input) return;
+
     if (key === 'back') {
         input.value = input.value.slice(0, -1);
     } else if (key === 'clear') {
         input.value = "";
+    } else if (key === '123') {
+        // Switch back to numpad (only for main search)
+        if (input.id === 'numSearch') {
+            document.getElementById('fullKeyboardContainer').style.display = 'none';
+            document.getElementById('orderInterface').classList.remove('keyboard-active');
+            document.getElementById('numpadContainer').style.display = 'grid';
+            document.getElementById('orderInterface').classList.add('numpad-active');
+        }
     } else {
         input.value += key;
     }
-    searchMenu();
+
+    // Trigger search if it's the main search box
+    if (input.id === 'numSearch') {
+        searchMenu();
+    }
     input.focus({ preventScroll: true });
 }
 
@@ -565,7 +608,7 @@ function addToOrder(item) {
     }, 50);
 
     // Keep keyboard open
-    searchInput.focus();
+    // searchInput.focus(); // Removed to prevent system numpad popup
 }
 
 
@@ -581,17 +624,20 @@ function updateQuantity(uid, delta) {
 
 
     // Keep keyboard open
-    document.getElementById('numSearch').focus();
+    // document.getElementById('numSearch').focus(); // Removed to prevent system numpad popup
 }
 
 function removeFromOrder(uid) {
     const row = document.getElementById(`row-${uid}`);
     if (row && row.parentElement) {
-        row.parentElement.style.animation = `slideUp var(--transition-normal) reverse forwards`;
+        const container = row.parentElement;
+        container.classList.add('item-deleted');
+        // Total duration is transition-normal * 2 (slideOut + collapseHeight)
+        // Transition-normal is 0.25s
         setTimeout(() => {
             allOrders[currentTable] = allOrders[currentTable].filter(i => i.uid !== uid);
             saveAndRender();
-        }, 200);
+        }, 500);
     } else {
         allOrders[currentTable] = allOrders[currentTable].filter(i => i.uid !== uid);
         saveAndRender();
@@ -637,7 +683,6 @@ function renderOrder(highlightUid = null, type = null) {
         }
 
         rowContainer.innerHTML = `
-            <div class="swipe-delete-btn" onclick="removeFromOrder(${item.uid})">Löschen</div>
             <div class="order-row" id="row-${item.uid}">
                 <div class="qty-badge-box" onclick="event.stopPropagation(); updateQuantity(${item.uid}, -1)">
                     <span class="qty-badge">${item.quantity}</span>
@@ -647,6 +692,7 @@ function renderOrder(highlightUid = null, type = null) {
                     <span class="item-code">${displayId}</span>
                 </div>
             </div>
+            <div class="swipe-delete-btn" onclick="removeFromOrder(${item.uid})">Löschen</div>
         `;
 
         const row = rowContainer.querySelector('.order-row');
@@ -673,10 +719,8 @@ function renderOrder(highlightUid = null, type = null) {
             const diff = touchStartX - touchEndX;
 
             if (diff > 40) { // Swipe left
-                row.style.transform = 'translateX(-80px)';
                 row.classList.add('swiped');
             } else if (diff < -40) { // Swipe right
-                row.style.transform = 'translateX(0)';
                 row.classList.remove('swiped');
             }
         };
@@ -755,7 +799,21 @@ function customPrompt(title, message, callback) {
     const inputId = "modalInput";
     const bodyContent = `
         <p style="margin-bottom:15px;">${message}</p>
-        <input type="text" id="${inputId}" class="modal-input" style="text-align:center;" inputmode="decimal" pattern="[0-9]*" autocomplete="off">
+        <input type="text" id="${inputId}" class="modal-input" style="text-align:center;" inputmode="none" autocomplete="off">
+        <div class="modal-numpad">
+            <button class="num-btn" data-key="1">1</button>
+            <button class="num-btn" data-key="2">2</button>
+            <button class="num-btn" data-key="3">3</button>
+            <button class="num-btn" data-key="4">4</button>
+            <button class="num-btn" data-key="5">5</button>
+            <button class="num-btn" data-key="6">6</button>
+            <button class="num-btn" data-key="7">7</button>
+            <button class="num-btn" data-key="8">8</button>
+            <button class="num-btn" data-key="9">9</button>
+            <button class="num-btn" style="visibility:hidden;"></button>
+            <button class="num-btn" data-key="0">0</button>
+            <button class="num-btn delete" data-key="back">⌫</button>
+        </div>
     `;
     showModal(title, bodyContent, [
         { text: "✖", primary: false, onClick: () => callback(null) },
@@ -824,6 +882,7 @@ function showModal(title, content, buttons, isHtml = false) {
     // Handle 'Enter' key
     const input = modal.querySelector('input');
     if (input) {
+        setTimeout(() => input.focus(), 50);
         input.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 const primaryBtn = buttons.find(b => b.primary);

@@ -75,20 +75,7 @@
                             </svg>
                         </div>
                         <input type="text" id="numSearch" class="modern-search-box" placeholder="Suche..."
-                            inputmode="decimal" autocomplete="off" oninput="searchMenu()">
-                        <button id="kbToggle" class="kb-switch-btn" onclick="toggleKeyboard()"
-                            title="Tastatur umschalten/ausblenden">
-                            <svg id="kbIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="2" y="5" width="20" height="14" rx="2"></rect>
-                                <line x1="7" y1="11" x2="7" y2="11.01"></line>
-                                <line x1="12" y1="11" x2="12" y2="11.01"></line>
-                                <line x1="17" y1="11" x2="17" y2="11.01"></line>
-                                <line x1="7" y1="15" x2="7" y2="15.01"></line>
-                                <line x1="12" y1="15" x2="12" y2="15.01"></line>
-                                <line x1="17" y1="15" x2="17" y2="15.01"></line>
-                            </svg>
-                        </button>
+                            inputmode="none" autocomplete="off" oninput="searchMenu()">
                     </div>
                     <!-- Custom Numpad Container -->
                     <div id="numpadContainer" class="numpad-grid" style="display:none;">
@@ -101,9 +88,44 @@
                         <button class="num-btn" data-key="7">7</button>
                         <button class="num-btn" data-key="8">8</button>
                         <button class="num-btn" data-key="9">9</button>
-                        <button class="num-btn delete" data-key="back">⌫</button>
+                        <button class="num-btn swap-btn" onclick="toggleKeyboard()">⌨️</button>
                         <button class="num-btn" data-key="0">0</button>
-                        <button class="num-btn clear" data-key="clear">C</button>
+                        <button class="num-btn delete" data-key="back">⌫</button>
+                    </div>
+
+                    <!-- Custom Full Keyboard Container -->
+                    <div id="fullKeyboardContainer" class="kb-full-grid" style="display:none;">
+                        <div class="kb-row">
+                            <button class="kb-key" data-key="Q">Q</button><button class="kb-key"
+                                data-key="W">W</button><button class="kb-key" data-key="E">E</button><button
+                                class="kb-key" data-key="R">R</button><button class="kb-key"
+                                data-key="T">T</button><button class="kb-key" data-key="Y">Y</button><button
+                                class="kb-key" data-key="U">U</button><button class="kb-key"
+                                data-key="I">I</button><button class="kb-key" data-key="O">O</button><button
+                                class="kb-key" data-key="P">P</button>
+                        </div>
+                        <div class="kb-row">
+                            <button class="kb-key" data-key="A">A</button><button class="kb-key"
+                                data-key="S">S</button><button class="kb-key" data-key="D">D</button><button
+                                class="kb-key" data-key="F">F</button><button class="kb-key"
+                                data-key="G">G</button><button class="kb-key" data-key="H">H</button><button
+                                class="kb-key" data-key="J">J</button><button class="kb-key"
+                                data-key="K">K</button><button class="kb-key" data-key="L">L</button>
+                        </div>
+                        <div class="kb-row">
+                            <button class="kb-key shift-btn" id="kbShiftBtn" onclick="toggleShift()">⇧</button>
+                            <button class="kb-key" data-key="Z">Z</button><button class="kb-key"
+                                data-key="X">X</button><button class="kb-key" data-key="C">C</button><button
+                                class="kb-key" data-key="V">V</button><button class="kb-key"
+                                data-key="B">B</button><button class="kb-key" data-key="N">N</button><button
+                                class="kb-key" data-key="M">M</button>
+                            <button class="kb-key backspace-btn" data-key="back">⌫</button>
+                        </div>
+                        <div class="kb-row">
+                            <button class="kb-key symbol-btn" onclick="toggleKeyboard()">🔢</button>
+                            <button class="kb-key space-btn" data-key=" ">Leertaste</button>
+                            <button class="kb-key return-btn" onclick="hideKeyboard()">Enter</button>
+                        </div>
                     </div>
                 </div>
             </div>

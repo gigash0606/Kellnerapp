@@ -411,25 +411,58 @@ header {
     }
 }
 
-@keyframes slideDownFade {
+@keyframes itemPopIn {
     0% {
         opacity: 0;
-        transform: translateY(-52px);
-        /* Height of one item */
-        z-index: -1;
+        transform: scale(0.8) translateY(-20px);
+        background-color: rgba(26, 146, 130, 0.1);
+    }
+
+    50% {
+        transform: scale(1.02) translateY(5px);
+        background-color: rgba(26, 146, 130, 0.05);
     }
 
     100% {
         opacity: 1;
-        transform: translateY(0);
-        z-index: 1;
+        transform: scale(1) translateY(0);
+        background-color: white;
+    }
+}
+
+@keyframes itemSlideOut {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(-110%);
+        opacity: 0;
+    }
+}
+
+@keyframes collapseHeight {
+    0% {
+        max-height: 100px;
+        margin-bottom: 1px;
+    }
+
+    100% {
+        max-height: 0;
+        margin-bottom: 0;
+        padding: 0;
+        opacity: 0;
     }
 }
 
 .item-new {
-    animation: slideDownFade var(--transition-normal) cubic-bezier(0.2, 0.8, 0.2, 1) both;
-    position: relative;
-    z-index: 10;
+    animation: itemPopIn var(--transition-normal) var(--spring-easing) both;
+}
+
+.item-deleted {
+    animation: itemSlideOut var(--transition-normal) ease-in forwards,
+        collapseHeight var(--transition-normal) ease-in var(--transition-normal) forwards;
 }
 
 .item-updated .order-row {
@@ -479,11 +512,17 @@ header {
     font-size: 0.9rem;
     font-weight: 700;
     z-index: 1;
+    transform: translateX(100%);
+    transition: transform var(--transition-normal) var(--spring-easing);
 }
 
 /* Swipe State */
 .order-row.swiped {
     transform: translateX(-80px);
+}
+
+.order-row.swiped+.swipe-delete-btn {
+    transform: translateX(0);
 }
 
 /* Footer Controls - Optimized for iPhone/PWA */
@@ -519,20 +558,21 @@ header {
 }
 
 .clear-table-btn {
-    background: rgba(26, 146, 130, 0.25);
-    color: var(--primary);
+    background: var(--primary-gradient);
+    color: white;
     border: none !important;
 }
 
 .delete-table-btn {
-    background: rgba(26, 146, 130, 0.25);
-    color: var(--primary);
+    background: var(--primary-gradient);
+    color: white;
     border: none !important;
-    border-left: 1px solid #eee !important;
+    border-left: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
 .footer-action-btns button:active {
-    background: rgba(26, 146, 130, 0.35);
+    filter: brightness(0.9);
+    transform: scale(0.99);
 }
 
 
@@ -540,13 +580,13 @@ header {
 .bottom-search {
     position: relative;
     padding: 0;
-    background: #e9ecef;
-    border-top: 1px solid #eee;
+    background: white;
+    border-top: none;
     z-index: 1001;
 }
 
 .bottom-search {
-    border-top: 1px solid #ddd;
+    border-top: none;
     border-bottom: none;
 }
 
@@ -592,9 +632,9 @@ header {
 .numpad-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    background: #e9ecef;
-    border-top: 1px solid #ddd;
-    gap: 1px;
+    background: white;
+    border-top: none;
+    gap: 0;
     user-select: none;
     padding-bottom: env(safe-area-inset-bottom);
 }
@@ -602,7 +642,8 @@ header {
 .num-btn {
     height: 60px;
     background: white;
-    border: none;
+    border: 1px solid #f8f9fa;
+    /* Subtle border for button separation */
     font-size: 1.5rem;
     font-weight: 600;
     color: var(--text);
@@ -623,6 +664,98 @@ header {
 
 .num-btn.clear {
     color: #f39c12;
+}
+
+/* Custom Full Keyboard Styling (iOS Mimic) */
+.kb-full-grid {
+    background: #d1d4d9;
+    /* Standard iOS keyboard light background */
+    padding: 8px 3px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    user-select: none;
+    padding-bottom: calc(env(safe-area-inset-bottom) + 8px);
+}
+
+.kb-row {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+}
+
+.kb-key {
+    background: #fff;
+    border: none;
+    border-radius: 5px;
+    height: 42px;
+    flex: 1;
+    max-width: 36px;
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.05s;
+}
+
+.kb-key:active {
+    background: #adb5bd;
+}
+
+/* Row 2 offsets */
+.kb-row:nth-child(2) {
+    padding: 0 5%;
+}
+
+/* Row 3 layout */
+.kb-row:nth-child(3) {
+    justify-content: space-between;
+}
+
+.shift-btn,
+.backspace-btn {
+    max-width: 44px;
+    background: #acb3bc;
+    font-size: 1.1rem;
+}
+
+.backspace-btn {
+    font-size: 1.3rem;
+}
+
+.shift-btn.active-shift {
+    background: #fff;
+    color: #000;
+}
+
+/* Row 4 layout */
+.kb-row:nth-child(4) {
+    gap: 6px;
+}
+
+.symbol-btn {
+    max-width: 80px;
+    background: #acb3bc;
+    font-size: 1rem;
+}
+
+.space-btn {
+    max-width: none;
+    flex: 3;
+    font-size: 1rem;
+}
+
+.return-btn {
+    max-width: 80px;
+    background: #acb3bc;
+    font-size: 1rem;
+    font-weight: 600;
 }
 
 .kb-switch-btn {
@@ -672,8 +805,8 @@ header {
     /* Height of footer (56px) + Search bar (52px) */
     left: 0;
     right: 0;
-    max-height: calc(100dvh - 120px - env(safe-area-inset-top));
-    /* Ensure it doesn't overlap header */
+    /* Dynamically calculate max-height to never overlap header (56px + safe-top) */
+    max-height: calc(100dvh - (56px + env(safe-area-inset-top)) - 108px - 15px);
     background: #fdfdfd;
     overflow-y: auto;
     z-index: 1500;
@@ -686,6 +819,12 @@ header {
 
 #orderInterface.numpad-active #searchResults {
     bottom: calc(108px + 240px + env(safe-area-inset-bottom));
+    max-height: calc(100dvh - (56px + env(safe-area-inset-top)) - (108px + 240px + env(safe-area-inset-bottom)) - 15px);
+}
+
+#orderInterface.keyboard-active #searchResults {
+    bottom: calc(108px + 220px + env(safe-area-inset-bottom));
+    max-height: calc(100dvh - (56px + env(safe-area-inset-top)) - (108px + 220px + env(safe-area-inset-bottom)) - 15px);
 }
 
 #searchResults.active {
@@ -835,4 +974,30 @@ header {
 
 .modal-btn:not(.primary) {
     color: #888;
+}
+
+/* Numpad in Modal */
+.modal-numpad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: #eee;
+    margin: 15px -24px -24px;
+    /* Flush with modal-body padding */
+    border-top: 1px solid #eee;
+}
+
+.modal-numpad .num-btn {
+    height: 54px;
+    background: white;
+    border: none;
+    font-size: 1.3rem;
+}
+
+.modal-numpad .num-btn:active {
+    background: #f0f0f0;
+}
+
+.modal-numpad .num-btn.delete {
+    color: var(--danger);
 }
