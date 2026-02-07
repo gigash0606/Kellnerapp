@@ -455,17 +455,18 @@ header {
 
 /* Search Results Overlay */
 #searchResults {
-    position: absolute;
-    top: 0;
+    position: fixed;
+    top: calc(56px + env(safe-area-inset-top));
     left: 0;
     right: 0;
-    bottom: 52px;
+    bottom: 0;
     background: #fdfdfd;
     overflow-y: auto;
     z-index: 2000;
     display: none !important;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
+    padding-bottom: calc(56px + 52px + env(safe-area-inset-bottom));
 }
 
 #searchResults.active {
