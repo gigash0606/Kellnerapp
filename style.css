@@ -251,13 +251,36 @@ header {
     overflow-y: auto;
     padding: 0;
     -webkit-overflow-scrolling: touch;
+    background: #fdfdfd;
+}
+
+/* Empty State */
+.empty-order-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: #999;
+}
+
+.empty-order-state svg {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+    opacity: 0.4;
+}
+
+.empty-order-state p {
+    font-size: 1.1rem;
+    font-weight: 500;
 }
 
 /* New Order Row Design */
 .order-row-container {
     position: relative;
     overflow: hidden;
-    background: var(--bg);
+    background: #fff;
     margin-bottom: 1px;
     user-select: none;
 }
@@ -266,48 +289,94 @@ header {
     position: relative;
     display: flex;
     align-items: stretch;
-    min-height: 52px;
+    min-height: 64px;
+    /* Slightly taller for better touch */
     background: white;
     z-index: 2;
-    transition: transform 0.2s ease-out;
-    border-bottom: 1px solid #eee;
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    border-bottom: 1px solid #f0f0f0;
     touch-action: pan-y;
-    /* Allow vertical scroll, let JS handle horizontal */
 }
 
-.qty-badge-box {
-    width: 60px;
-    background: var(--primary);
+/* LEFT: Qty Control */
+.qty-control {
+    width: 64px;
+    background: #f8f9fa;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    border-right: 1px solid #f0f0f0;
 }
 
-.qty-badge {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: white;
+.qty-control:active {
+    background: #e9ecef;
 }
 
-.item-main-info {
+.qty-val {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+/* CENTER: Item Content */
+.item-content {
     flex: 1;
-    padding: 8px 15px;
+    padding: 10px 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+}
+
+.item-info {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: baseline;
 }
 
 .item-name {
-    font-size: 1.1rem;
-    font-weight: 600;
+    font-size: 1.05rem;
+    font-weight: 700;
     color: #333;
+    line-height: 1.2;
 }
 
 .item-code {
+    font-size: 0.85rem;
+    color: #aaa;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+.item-comment {
     font-size: 0.9rem;
-    color: #999;
-    margin-left: 10px;
+    color: #e67e22;
+    /* Warm accent for comments */
+    font-weight: 600;
+    font-style: italic;
+    margin-top: 2px;
+}
+
+/* RIGHT: Edit Btn */
+.row-edit-btn {
+    width: 56px;
+    background: transparent;
+    border: none;
+    color: #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.row-edit-btn:active {
+    color: var(--primary);
+}
+
+.row-edit-btn svg {
+    width: 20px;
+    height: 20px;
 }
 
 /* Swipe Delete Button */
@@ -322,7 +391,7 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: 700;
     z-index: 1;
 }
@@ -334,15 +403,13 @@ header {
 
 /* Footer Controls - Optimized for iPhone/PWA */
 .table-footer-controls {
+    position: relative;
     background: #fff;
-    /* Clean white background for area */
-    /* Remove padding to allow buttons to sit flush */
-    padding-bottom: 0;
     display: flex;
     flex-direction: column;
-    gap: 0;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-    z-index: 100;
+    box-shadow: 0 -3px 15px rgba(0, 0, 0, 0.08);
+    z-index: 1000;
+    flex-shrink: 0;
 }
 
 .footer-action-btns {
@@ -384,11 +451,11 @@ header {
     opacity: 0.8;
 }
 
-.top-search {
-    position: static;
+.bottom-search {
+    position: relative;
     padding: 0;
     background: #e9ecef;
-    border-bottom: 1px solid #eee;
+    border-top: 1px solid #ddd;
     z-index: 1001;
 }
 
@@ -448,19 +515,22 @@ header {
     height: 24px;
 }
 
-/* Results Dropdown (now at top) */
+/* Results Dropdown (now at bottom, opens up) */
 #searchResults {
     position: absolute;
-    top: 52px;
+    bottom: 52px;
+    top: auto;
     left: 0;
     right: 0;
-    bottom: 0;
     background: #fdfdfd;
     overflow-y: auto;
     z-index: 2000;
     display: none !important;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+    max-height: 60vh;
+    border-top: 1px solid #ddd;
 }
 
 #searchResults.active {
@@ -505,12 +575,7 @@ header {
 }
 
 /* Responsive adjustments */
-@media (max-height: 500px) {
-    .table-footer-controls {
-        padding-top: 5px;
-        padding-bottom: 5px;
-    }
-}
+/* Removed legacy footer padding to maintain flush bottom alignment */
 
 /* Custom Modal Styling */
 .modal-overlay {
