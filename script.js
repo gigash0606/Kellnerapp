@@ -9,8 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Register Service Worker
     if ('serviceWorker' in navigator) {
-        navigator.worker = navigator.serviceWorker.register('sw.js')
-            .then(() => console.log('Service Worker Registered'));
+        navigator.serviceWorker.register('sw.js')
+            .then(() => console.log('Service Worker Registered'))
+            .catch(err => console.error('SW Registration Failed', err));
     }
 
     // PWA DOUBLE-TAP ZOOM SHIELD
@@ -29,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
     });
 
+    // VIRTUAL VIEWPORT ADAPTATION (iOS Keyboard handling)
     if (window.visualViewport) {
         window.visualViewport.addEventListener('resize', () => {
             const root = document.getElementById('rootContainer');
@@ -37,43 +39,36 @@ document.addEventListener('DOMContentLoaded', () => {
             const modalContainer = document.getElementById('modalContainer');
             const orderInterface = document.getElementById('orderInterface');
 
-            // Check specific conditions
             const isModalOpen = modalContainer && modalContainer.children.length > 0;
             const isOrderScreen = orderInterface && getComputedStyle(orderInterface).display !== 'none';
 
-            // IF on Home Screen AND Modal is open (Create Table) -> Don't resize (Fixed Layout)
-            if (isModalOpen && !isOrderScreen) {
-                return;
-            }
+            // Special case: Keep modal centered when keyboard appears, don't shrink container
+            if (isModalOpen && !isOrderScreen) return;
 
-            // Otherwise (Order Screen search or no modal) -> Resize Layout
+            // Adapt height to keyboard/viewport changes
             root.style.height = window.visualViewport.height + 'px';
         });
     }
 
-
-    // LOCK SCREEN SCROLL WHEN SEARCH IS FOCUSED
+    // LOCK RUBBER-BAND SCROLL ON SEARCH FOCUS (iOS Safari specific)
     const searchInput = document.getElementById('numSearch');
     if (searchInput) {
-        const preventBodyScroll = (e) => {
+        const preventRubberBand = (e) => {
             const results = document.getElementById('searchResults');
-            // If the touch target is inside the Search Results AND they are visible (active), allow scroll.
-            // Otherwise, block the touchmove to prevent screen scrolling.
             const isResultScroll = results && results.classList.contains('active') && results.contains(e.target);
 
-            if (!isResultScroll) {
-                if (e.cancelable) e.preventDefault();
+            // Only allow touchmove inside the active results list
+            if (!isResultScroll && e.cancelable) {
+                e.preventDefault();
             }
         };
 
         searchInput.addEventListener('focus', () => {
-            document.body.style.overflow = 'hidden'; // Ensure CSS lock
-            document.addEventListener('touchmove', preventBodyScroll, { passive: false });
+            document.addEventListener('touchmove', preventRubberBand, { passive: false });
         });
 
         searchInput.addEventListener('blur', () => {
-            document.body.style.overflow = ''; // Release CSS lock (reverts to stylesheet)
-            document.removeEventListener('touchmove', preventBodyScroll);
+            document.removeEventListener('touchmove', preventRubberBand);
         });
     }
 });
