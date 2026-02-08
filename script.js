@@ -260,6 +260,13 @@ db.collection("tables").onSnapshot((snapshot) => {
     tables = newTables.sort((a, b) => a - b);
     allOrders = newOrders;
 
+    // If current table was deleted by another user, go back to main screen
+    if (currentTable && !tables.includes(currentTable)) {
+        backToTables();
+        customAlert("Info", "Tisch wurde gelöscht");
+        return;
+    }
+
     // Refresh UI
     generateTables();
     if (currentTable) {
